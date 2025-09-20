@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 첫 번째 GitHub Pages</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            border-bottom: 3px solid #007acc;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #007acc;
+        }
+        .highlight {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #007acc;
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007acc;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #005999;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 GitHub Pages에 오신 것을 환영합니다!</h1>
+        
+        <h2>📋 프로젝트 소개</h2>
+        <p>이 페이지는 VS Code에서 작성되고 GitHub Pages를 통해 배포된 웹 페이지입니다.</p>
+        
+        <div class="highlight">
+            <h3>✨ 주요 기능</h3>
+            <ul>
+                <li>반응형 웹 디자인</li>
+                <li>깔끔한 사용자 인터페이스</li>
+                <li>GitHub를 통한 버전 관리</li>
+                <li>무료 웹 호스팅</li>
+            </ul>
+        </div>
+        
+        <h2>🚀 시작하기</h2>
+        <p>VS Code와 GitHub를 연동하여 웹 페이지를 만드는 것은 매우 간단합니다:</p>
+        <ol>
+            <li>Git 저장소 초기화</li>
+            <li>GitHub 저장소 생성 및 연결</li>
+            <li>HTML 파일 작성</li>
+            <li>GitHub에 푸시</li>
+            <li>GitHub Pages 활성화</li>
+        </ol>
+        
+        <h2>📞 연락처</h2>
+        <p>질문이나 제안이 있으시면 언제든지 연락해주세요!</p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="https://github.com" class="button">GitHub 방문하기</a>
+        </div>
+        
+        <footer>
+            <p>&copy; 2025 나의 GitHub Pages 프로젝트. Made with ❤️ using VS Code</p>
+            <p>마지막 업데이트: <span id="lastUpdated"></span></p>
+        </footer>
+    </div>
+
+    <script>
+        // 현재 날짜를 표시
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('ko-KR');
+        
+        // 간단한 인터랙션 추가
+        document.querySelector('h1').addEventListener('click', function() {
+            this.style.color = this.style.color === 'red' ? '#333' : 'red';
+        });
+    </script>
+</body>
+</html>
