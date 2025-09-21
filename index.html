@@ -626,6 +626,13 @@
 
         // 초기화
         document.addEventListener('DOMContentLoaded', function() {
+            // QR 라이브러리 로드 확인
+            if (typeof QRCode === 'undefined') {
+                console.error('QRCode 라이브러리가 로드되지 않았습니다.');
+            } else {
+                console.log('QRCode 라이브러리 로드 완료');
+            }
+            
             // 현재 날짜 설정
             const today = new Date();
             currentDateEl.textContent = today.toLocaleDateString('ko-KR', {
@@ -1004,51 +1011,76 @@
 
         // QR 코드 생성
         function generateQR() {
+            console.log('generateQR 함수 호출됨');
+            
             if (books.length === 0) {
                 alert('공유할 독서 기록이 없습니다.');
                 return;
             }
 
-            const dataToShare = {
-                books: books,
-                exportDate: new Date().toISOString(),
-                totalBooks: books.length,
-                version: '1.0',
-                source: 'qr'
-            };
+            try {
+                const dataToShare = {
+                    books: books,
+                    exportDate: new Date().toISOString(),
+                    totalBooks: books.length,
+                    version: '1.0',
+                    source: 'qr'
+                };
 
-            // 데이터를 base64로 인코딩
-            const jsonString = JSON.stringify(dataToShare);
-            const encodedData = btoa(unescape(encodeURIComponent(jsonString)));
-            
-            // 현재 사이트 URL에 데이터 파라미터 추가
-            const currentUrl = window.location.origin + window.location.pathname;
-            const shareUrl = `${currentUrl}?data=${encodedData}`;
+                // 데이터를 base64로 인코딩
+                const jsonString = JSON.stringify(dataToShare);
+                const encodedData = btoa(unescape(encodeURIComponent(jsonString)));
+                
+                // 현재 사이트 URL에 데이터 파라미터 추가
+                const currentUrl = window.location.origin + window.location.pathname;
+                const shareUrl = `${currentUrl}?data=${encodedData}`;
+                
+                console.log('QR 코드 생성 시작:', shareUrl);
 
-            // QR 코드 생성
-            const canvas = document.getElementById('qrCanvas');
-            QRCode.toCanvas(canvas, shareUrl, {
-                width: 300,
-                margin: 2,
-                color: {
-                    dark: '#000000',
-                    light: '#FFFFFF'
+                // QR 코드 생성 - QRCode 라이브러리 사용
+                const canvas = document.getElementById('qrCanvas');
+                if (!canvas) {
+                    alert('QR 캔버스를 찾을 수 없습니다.');
+                    return;
                 }
-            }, function (error) {
-                if (error) {
-                    console.error('QR 코드 생성 실패:', error);
-                    alert('QR 코드 생성에 실패했습니다: ' + error.message);
-                } else {
+
+                // QRCode.toCanvas 사용
+                QRCode.toCanvas(canvas, shareUrl, {
+                    width: 300,
+                    margin: 2,
+                    color: {
+                        dark: '#000000',
+                        light: '#FFFFFF'
+                    }
+                }).then(() => {
+                    console.log('QR 코드 생성 성공');
+                    
                     // URL 표시
-                    document.getElementById('qrUrlDisplay').value = shareUrl;
+                    const urlDisplay = document.getElementById('qrUrlDisplay');
+                    if (urlDisplay) {
+                        urlDisplay.value = shareUrl;
+                    }
                     
                     // 모달 표시
-                    document.getElementById('qrShareContent').style.display = 'block';
-                    document.getElementById('qrScanContent').style.display = 'none';
-                    document.getElementById('qrModalTitle').textContent = '📱 QR 코드로 데이터 공유';
-                    document.getElementById('qrModal').style.display = 'block';
-                }
-            });
+                    const shareContent = document.getElementById('qrShareContent');
+                    const scanContent = document.getElementById('qrScanContent');
+                    const modalTitle = document.getElementById('qrModalTitle');
+                    const modal = document.getElementById('qrModal');
+                    
+                    if (shareContent) shareContent.style.display = 'block';
+                    if (scanContent) scanContent.style.display = 'none';
+                    if (modalTitle) modalTitle.textContent = '📱 QR 코드로 데이터 공유';
+                    if (modal) modal.style.display = 'block';
+                    
+                }).catch((error) => {
+                    console.error('QR 코드 생성 실패:', error);
+                    alert('QR 코드 생성에 실패했습니다: ' + error.message);
+                });
+
+            } catch (error) {
+                console.error('generateQR 오류:', error);
+                alert('QR 코드 생성 중 오류가 발생했습니다: ' + error.message);
+            }
         }
 
         // QR 코드 스캔 모달 표시
