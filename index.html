@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📚 독서 기록장</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -407,6 +408,30 @@
             background: #fff3e0;
             color: #f57c00;
         }
+
+        /* QR 코드 버튼 스타일 */
+        .btn-qr {
+            background: linear-gradient(135deg, #6B46C1, #8B5CF6);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-qr:hover {
+            background: linear-gradient(135deg, #553C9A, #7C3AED);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
+        }
+
+        .btn-qr:active {
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -533,6 +558,8 @@
                 <div class="sync-buttons">
                     <button class="btn-secondary" onclick="exportData()">📤 데이터 내보내기</button>
                     <button class="btn-secondary" onclick="document.getElementById('importFile').click()">📥 데이터 가져오기</button>
+                    <button class="btn-qr" onclick="generateQR()">📱 QR 코드 공유</button>
+                    <button class="btn-qr" onclick="showQRScanner()">📷 QR 스캔</button>
                     <button class="btn-secondary" onclick="clearAllData()">🗑️ 모든 데이터 삭제</button>
                 </div>
                 
@@ -542,6 +569,8 @@
                     💡 <strong>사용법:</strong><br>
                     • <strong>내보내기:</strong> 현재 기기의 독서 기록을 JSON 파일로 다운로드<br>
                     • <strong>가져오기:</strong> 다른 기기에서 내보낸 JSON 파일을 업로드하여 병합<br>
+                    • <strong>QR 코드 공유:</strong> 데이터를 QR 코드로 생성하여 다른 기기에서 쉽게 스캔<br>
+                    • <strong>QR 스캔:</strong> 다른 기기에서 생성한 QR 코드를 스캔하여 데이터 가져오기<br>
                     • 기존 데이터와 새 데이터가 자동으로 병합됩니다
                 </div>
             </div>
@@ -1159,5 +1188,50 @@
             }
         }
     </script>
+
+    <!-- QR 코드 모달 -->
+    <div id="qrModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+        <div style="background-color: white; margin: 5% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 500px; position: relative;">
+            <span onclick="closeQRModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 20px;">&times;</span>
+            <h2 id="qrModalTitle" style="margin-bottom: 20px; color: #6B46C1;">📱 QR 코드로 데이터 공유</h2>
+            
+            <!-- QR 코드 생성 화면 -->
+            <div id="qrShareContent">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <canvas id="qrCanvas" style="border: 1px solid #ddd; border-radius: 8px;"></canvas>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">공유 URL:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="qrUrlDisplay" readonly style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
+                        <button onclick="copyQRUrl()" class="btn-qr">📋 복사</button>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
+                        📱 모바일에서 QR 코드를 스캔하거나<br>
+                        URL을 복사해서 다른 기기로 전송하세요
+                    </p>
+                    <button onclick="showQRScanner()" class="btn-qr">📷 QR 스캔하기</button>
+                </div>
+            </div>
+            
+            <!-- QR 코드 스캔 화면 -->
+            <div id="qrScanContent" style="display: none;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">QR 코드 데이터 입력:</label>
+                    <textarea id="qrDataInput" placeholder="QR 코드로 얻은 URL을 여기에 붙여넣기하거나 JSON 데이터를 직접 입력하세요..." style="width: 100%; height: 120px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical;"></textarea>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button onclick="importFromQR()" class="btn-qr" style="margin-right: 10px;">📥 데이터 가져오기</button>
+                    <button onclick="generateQR()" class="btn-qr">🔄 QR 생성으로 돌아가기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
