@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📚 독서 기록장</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -626,11 +626,11 @@
 
         // 초기화
         document.addEventListener('DOMContentLoaded', function() {
-            // QR 라이브러리 로드 확인
-            if (typeof QRCode === 'undefined') {
-                console.error('QRCode 라이브러리가 로드되지 않았습니다.');
+            // QRious 라이브러리 로드 확인
+            if (typeof QRious === 'undefined') {
+                console.error('QRious 라이브러리가 로드되지 않았습니다.');
             } else {
-                console.log('QRCode 라이브러리 로드 완료');
+                console.log('QRious 라이브러리 로드 완료');
             }
             
             // 현재 날짜 설정
@@ -1037,45 +1037,39 @@
                 
                 console.log('QR 코드 생성 시작:', shareUrl);
 
-                // QR 코드 생성 - QRCode 라이브러리 사용
+                // QR 코드 생성 - QRious 라이브러리 사용
                 const canvas = document.getElementById('qrCanvas');
                 if (!canvas) {
                     alert('QR 캔버스를 찾을 수 없습니다.');
                     return;
                 }
 
-                // QRCode.toCanvas 사용
-                QRCode.toCanvas(canvas, shareUrl, {
-                    width: 300,
-                    margin: 2,
-                    color: {
-                        dark: '#000000',
-                        light: '#FFFFFF'
-                    }
-                }).then(() => {
-                    console.log('QR 코드 생성 성공');
-                    
-                    // URL 표시
-                    const urlDisplay = document.getElementById('qrUrlDisplay');
-                    if (urlDisplay) {
-                        urlDisplay.value = shareUrl;
-                    }
-                    
-                    // 모달 표시
-                    const shareContent = document.getElementById('qrShareContent');
-                    const scanContent = document.getElementById('qrScanContent');
-                    const modalTitle = document.getElementById('qrModalTitle');
-                    const modal = document.getElementById('qrModal');
-                    
-                    if (shareContent) shareContent.style.display = 'block';
-                    if (scanContent) scanContent.style.display = 'none';
-                    if (modalTitle) modalTitle.textContent = '📱 QR 코드로 데이터 공유';
-                    if (modal) modal.style.display = 'block';
-                    
-                }).catch((error) => {
-                    console.error('QR 코드 생성 실패:', error);
-                    alert('QR 코드 생성에 실패했습니다: ' + error.message);
+                // QRious로 QR 코드 생성
+                const qr = new QRious({
+                    element: canvas,
+                    value: shareUrl,
+                    size: 300,
+                    level: 'M'
                 });
+
+                console.log('QR 코드 생성 성공');
+                
+                // URL 표시
+                const urlDisplay = document.getElementById('qrUrlDisplay');
+                if (urlDisplay) {
+                    urlDisplay.value = shareUrl;
+                }
+                
+                // 모달 표시
+                const shareContent = document.getElementById('qrShareContent');
+                const scanContent = document.getElementById('qrScanContent');
+                const modalTitle = document.getElementById('qrModalTitle');
+                const modal = document.getElementById('qrModal');
+                
+                if (shareContent) shareContent.style.display = 'block';
+                if (scanContent) scanContent.style.display = 'none';
+                if (modalTitle) modalTitle.textContent = '📱 QR 코드로 데이터 공유';
+                if (modal) modal.style.display = 'block';
 
             } catch (error) {
                 console.error('generateQR 오류:', error);
