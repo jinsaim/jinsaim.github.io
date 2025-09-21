@@ -157,6 +157,49 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
+        .sync-section {
+            background: #fff8e1;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffa726;
+        }
+
+        .sync-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #ffa726, #ffcc02);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .sync-info {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -482,6 +525,27 @@
                 </form>
             </div>
 
+            <!-- 데이터 동기화 섹션 -->
+            <div class="sync-section">
+                <h3>📱↔️💻 기기 간 데이터 동기화</h3>
+                <p>휴대폰과 컴퓨터 간에 독서 기록을 동기화할 수 있습니다.</p>
+                
+                <div class="sync-buttons">
+                    <button class="btn-secondary" onclick="exportData()">📤 데이터 내보내기</button>
+                    <button class="btn-secondary" onclick="document.getElementById('importFile').click()">📥 데이터 가져오기</button>
+                    <button class="btn-secondary" onclick="clearAllData()">🗑️ 모든 데이터 삭제</button>
+                </div>
+                
+                <input type="file" id="importFile" class="file-input" accept=".json" onchange="importData(event)">
+                
+                <div class="sync-info">
+                    💡 <strong>사용법:</strong><br>
+                    • <strong>내보내기:</strong> 현재 기기의 독서 기록을 JSON 파일로 다운로드<br>
+                    • <strong>가져오기:</strong> 다른 기기에서 내보낸 JSON 파일을 업로드하여 병합<br>
+                    • 기존 데이터와 새 데이터가 자동으로 병합됩니다
+                </div>
+            </div>
+
             <!-- 검색 및 필터 -->
             <div class="search-filter">
                 <input type="text" class="search-box" id="searchBox" placeholder="🔍 책 제목, 저자, 문장으로 검색...">
@@ -768,6 +832,146 @@
             }).length;
             thisMonthBooksEl.textContent = thisMonthCount;
         }
+
+        // 데이터 내보내기
+        function exportData() {
+            if (books.length === 0) {
+                alert('내보낼 독서 기록이 없습니다.');
+                return;
+            }
+
+            const dataToExport = {
+                books: books,
+                exportDate: new Date().toISOString(),
+                totalBooks: books.length,
+                version: '1.0'
+            };
+
+            const dataStr = JSON.stringify(dataToExport, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `독서기록_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert(`${books.length}개의 독서 기록을 내보냈습니다! 📤`);
+        }
+
+        // 데이터 가져오기
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (!importedData.books || !Array.isArray(importedData.books)) {
+                        alert('올바르지 않은 파일 형식입니다.');
+                        return;
+                    }
+
+                    const importedBooks = importedData.books;
+                    let newBooks = 0;
+                    let updatedBooks = 0;
+
+                    // 기존 책과 새로운 책 병합 (ID와 제목+저자로 중복 체크)
+                    importedBooks.forEach(importedBook => {
+                        const existingIndex = books.findIndex(book => 
+                            book.id === importedBook.id || 
+                            (book.title === importedBook.title && book.author === importedBook.author)
+                        );
+
+                        if (existingIndex !== -1) {
+                            // 기존 책이 있으면 더 최신 데이터로 업데이트
+                            const existingCreatedAt = new Date(books[existingIndex].createdAt || 0);
+                            const importedCreatedAt = new Date(importedBook.createdAt || 0);
+                            
+                            if (importedCreatedAt > existingCreatedAt) {
+                                books[existingIndex] = { ...importedBook };
+                                updatedBooks++;
+                            }
+                        } else {
+                            // 새로운 책이면 추가
+                            books.push({ ...importedBook, id: Date.now() + Math.random() });
+                            newBooks++;
+                        }
+                    });
+
+                    // 날짜순 정렬
+                    books.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                    // 로컬 스토리지 저장
+                    localStorage.setItem('books', JSON.stringify(books));
+
+                    // 화면 업데이트
+                    displayBooks();
+                    updateStats();
+
+                    alert(`데이터 가져오기 완료! 📥\n새로운 책: ${newBooks}개\n업데이트된 책: ${updatedBooks}개`);
+
+                } catch (error) {
+                    alert('파일을 읽는 중 오류가 발생했습니다: ' + error.message);
+                }
+            };
+
+            reader.readAsText(file);
+            
+            // 파일 입력 초기화
+            event.target.value = '';
+        }
+
+        // 모든 데이터 삭제
+        function clearAllData() {
+            if (books.length === 0) {
+                alert('삭제할 데이터가 없습니다.');
+                return;
+            }
+
+            const confirmMessage = `정말로 모든 독서 기록(${books.length}개)을 삭제하시겠습니까?\n\n⚠️ 이 작업은 되돌릴 수 없습니다!\n\n삭제하기 전에 데이터를 내보내기하는 것을 권장합니다.`;
+            
+            if (confirm(confirmMessage)) {
+                const finalConfirm = confirm('마지막 확인: 정말로 모든 데이터를 삭제하시겠습니까?');
+                
+                if (finalConfirm) {
+                    books = [];
+                    localStorage.removeItem('books');
+                    displayBooks();
+                    updateStats();
+                    alert('모든 독서 기록이 삭제되었습니다. 🗑️');
+                }
+            }
+        }
+
+        // 데이터 백업 알림 (7일마다)
+        function checkBackupReminder() {
+            const lastBackup = localStorage.getItem('lastBackupReminder');
+            const now = new Date().getTime();
+            const sevenDays = 7 * 24 * 60 * 60 * 1000; // 7일을 밀리초로
+
+            if (!lastBackup || (now - parseInt(lastBackup)) > sevenDays) {
+                if (books.length >= 5) { // 5개 이상의 기록이 있을 때만 알림
+                    setTimeout(() => {
+                        const reminder = confirm('💾 백업 권장\n\n독서 기록이 많이 쌓였네요!\n데이터 손실을 방지하기 위해 백업을 권장합니다.\n\n지금 백업하시겠습니까?');
+                        
+                        if (reminder) {
+                            exportData();
+                        }
+                        
+                        localStorage.setItem('lastBackupReminder', now.toString());
+                    }, 3000); // 3초 후 알림
+                }
+            }
+        }
+
+        // 페이지 로드 시 백업 알림 체크
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(checkBackupReminder, 5000); // 5초 후 체크
+        });
     </script>
 </body>
 </html>
