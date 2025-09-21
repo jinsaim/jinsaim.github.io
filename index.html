@@ -1,28 +1,773 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="ko">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfolio</title>
+    <title>📚 독서 기록장</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        padding: 50px;
-        background-color: #f4f4f4;
-      }
-      h1 {
-        color: #333;
-      }
-      a {
-        color: #0066cc;
-        text-decoration: none;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .date-display {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .reading-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="date"], input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .rating-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .star {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .star.active, .star:hover {
+            color: #FFD700;
+        }
+
+        .genre-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .genre-btn {
+            padding: 8px 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .genre-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .genre-btn.selected {
+            background: #2196F3;
+            color: white;
+            border-color: #2196F3;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2196F3;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+        }
+
+        .filter-select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            background: white;
+        }
+
+        .reading-list {
+            margin-top: 30px;
+        }
+
+        .reading-item {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .reading-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .book-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .book-info {
+            flex: 1;
+        }
+
+        .book-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .book-author {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .book-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            color: #999;
+            flex-wrap: wrap;
+        }
+
+        .rating-display {
+            font-size: 18px;
+            color: #FFD700;
+        }
+
+        .genre-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 8px;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .quote-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #2196F3;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-style: italic;
+        }
+
+        .quote-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .quote-page {
+            font-size: 12px;
+            color: #666;
+            text-align: right;
+        }
+
+        .thoughts {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff8e1;
+            border-radius: 8px;
+            border-left: 4px solid #ffa726;
+        }
+
+        .thoughts-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+        }
+
+        .reading-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-reading {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-completed {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-paused {
+            background: #fff3e0;
+            color: #f57c00;
+        }
     </style>
-  </head>
-  <body>
-    <h1>Welcome to my My Portfolio</h1>
-    <p>This is my personal apace on the web.</p>
-    <a href="https://github.com/jinsaim" target="_blank">Visit My Github</a>
-  </body>
-  </head>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 독서 기록장</h1>
+            <div class="date-display" id="currentDate"></div>
+        </div>
+
+        <div class="main-content">
+            <!-- 통계 섹션 -->
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalBooks">0</div>
+                    <div class="stat-label">총 도서</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="completedBooks">0</div>
+                    <div class="stat-label">완독</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalPages">0</div>
+                    <div class="stat-label">총 페이지</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="avgRating">0</div>
+                    <div class="stat-label">평균 평점</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="thisMonthBooks">0</div>
+                    <div class="stat-label">이번 달</div>
+                </div>
+            </div>
+
+            <!-- 독서 기록 폼 -->
+            <div class="reading-form">
+                <h2>📖 새로운 독서 기록</h2>
+                <form id="readingForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bookTitle">책 제목 *</label>
+                            <input type="text" id="bookTitle" placeholder="읽은 책의 제목을 입력하세요" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="author">저자 *</label>
+                            <input type="text" id="author" placeholder="저자명을 입력하세요" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="readingDate">읽은 날짜</label>
+                            <input type="date" id="readingDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="totalPages">총 페이지</label>
+                            <input type="number" id="totalPages" placeholder="총 페이지 수">
+                        </div>
+                        <div class="form-group">
+                            <label for="currentPage">현재 페이지</label>
+                            <input type="number" id="currentPage" placeholder="읽은 페이지">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="readingStatus">읽기 상태</label>
+                            <select id="readingStatus">
+                                <option value="reading">읽는 중</option>
+                                <option value="completed">완독</option>
+                                <option value="paused">잠시 중단</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>평점</label>
+                            <div class="rating-selector" id="ratingSelector">
+                                <span class="star" data-rating="1">★</span>
+                                <span class="star" data-rating="2">★</span>
+                                <span class="star" data-rating="3">★</span>
+                                <span class="star" data-rating="4">★</span>
+                                <span class="star" data-rating="5">★</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>장르</label>
+                        <div class="genre-selector">
+                            <button type="button" class="genre-btn" data-genre="소설">소설</button>
+                            <button type="button" class="genre-btn" data-genre="에세이">에세이</button>
+                            <button type="button" class="genre-btn" data-genre="자기계발">자기계발</button>
+                            <button type="button" class="genre-btn" data-genre="비즈니스">비즈니스</button>
+                            <button type="button" class="genre-btn" data-genre="과학">과학</button>
+                            <button type="button" class="genre-btn" data-genre="역사">역사</button>
+                            <button type="button" class="genre-btn" data-genre="철학">철학</button>
+                            <button type="button" class="genre-btn" data-genre="기타">기타</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="favoriteQuote">인상 깊은 문장</label>
+                        <textarea id="favoriteQuote" placeholder="책에서 인상 깊었던 문장이나 구절을 적어보세요..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quotePage">문장이 있는 페이지</label>
+                        <input type="number" id="quotePage" placeholder="페이지 번호 (선택사항)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="thoughts">생각과 감상</label>
+                        <textarea id="thoughts" placeholder="책을 읽고 느낀 점, 배운 점, 생각 등을 자유롭게 적어보세요..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">📚 독서 기록 저장</button>
+                </form>
+            </div>
+
+            <!-- 검색 및 필터 -->
+            <div class="search-filter">
+                <input type="text" class="search-box" id="searchBox" placeholder="🔍 책 제목, 저자, 문장으로 검색...">
+                <select class="filter-select" id="genreFilter">
+                    <option value="">모든 장르</option>
+                    <option value="소설">소설</option>
+                    <option value="에세이">에세이</option>
+                    <option value="자기계발">자기계발</option>
+                    <option value="비즈니스">비즈니스</option>
+                    <option value="과학">과학</option>
+                    <option value="역사">역사</option>
+                    <option value="철학">철학</option>
+                    <option value="기타">기타</option>
+                </select>
+                <select class="filter-select" id="statusFilter">
+                    <option value="">모든 상태</option>
+                    <option value="reading">읽는 중</option>
+                    <option value="completed">완독</option>
+                    <option value="paused">잠시 중단</option>
+                </select>
+            </div>
+
+            <!-- 독서 목록 -->
+            <div class="reading-list">
+                <h2>📖 나의 독서 목록</h2>
+                <div id="readingContainer">
+                    <div class="empty-state">
+                        <p>아직 기록된 독서가 없습니다.<br>첫 번째 독서 기록을 남겨보세요! 📚</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let books = JSON.parse(localStorage.getItem('books')) || [];
+        let selectedRating = 0;
+        let selectedGenre = '';
+
+        // DOM 요소
+        const readingForm = document.getElementById('readingForm');
+        const readingContainer = document.getElementById('readingContainer');
+        const searchBox = document.getElementById('searchBox');
+        const genreFilter = document.getElementById('genreFilter');
+        const statusFilter = document.getElementById('statusFilter');
+        const currentDateEl = document.getElementById('currentDate');
+        const readingDateInput = document.getElementById('readingDate');
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 현재 날짜 설정
+            const today = new Date();
+            currentDateEl.textContent = today.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            });
+            
+            readingDateInput.valueAsDate = today;
+            
+            // 평점 선택 이벤트
+            document.querySelectorAll('.star').forEach(star => {
+                star.addEventListener('click', function() {
+                    selectedRating = parseInt(this.dataset.rating);
+                    updateStarDisplay();
+                });
+            });
+
+            // 장르 선택 이벤트
+            document.querySelectorAll('.genre-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedGenre = this.dataset.genre;
+                });
+            });
+
+            // 읽기 상태 변경 시 현재 페이지 자동 설정
+            document.getElementById('readingStatus').addEventListener('change', function() {
+                const totalPages = document.getElementById('totalPages').value;
+                const currentPage = document.getElementById('currentPage');
+                
+                if (this.value === 'completed' && totalPages) {
+                    currentPage.value = totalPages;
+                }
+            });
+
+            // 폼 제출 이벤트
+            readingForm.addEventListener('submit', saveReading);
+
+            // 검색 및 필터 이벤트
+            searchBox.addEventListener('input', filterBooks);
+            genreFilter.addEventListener('change', filterBooks);
+            statusFilter.addEventListener('change', filterBooks);
+
+            // 목록 표시
+            displayBooks();
+            updateStats();
+        });
+
+        // 별점 표시 업데이트
+        function updateStarDisplay() {
+            document.querySelectorAll('.star').forEach((star, index) => {
+                if (index < selectedRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // 독서 기록 저장
+        function saveReading(e) {
+            e.preventDefault();
+
+            const book = {
+                id: Date.now(),
+                title: document.getElementById('bookTitle').value,
+                author: document.getElementById('author').value,
+                date: document.getElementById('readingDate').value,
+                totalPages: parseInt(document.getElementById('totalPages').value) || 0,
+                currentPage: parseInt(document.getElementById('currentPage').value) || 0,
+                status: document.getElementById('readingStatus').value,
+                rating: selectedRating,
+                genre: selectedGenre || '기타',
+                quote: document.getElementById('favoriteQuote').value,
+                quotePage: parseInt(document.getElementById('quotePage').value) || 0,
+                thoughts: document.getElementById('thoughts').value,
+                createdAt: new Date().toISOString()
+            };
+
+            books.push(book);
+            books.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            localStorage.setItem('books', JSON.stringify(books));
+
+            // 폼 초기화
+            readingForm.reset();
+            selectedRating = 0;
+            selectedGenre = '';
+            updateStarDisplay();
+            document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('selected'));
+            readingDateInput.valueAsDate = new Date();
+
+            displayBooks();
+            updateStats();
+
+            alert('독서 기록이 저장되었습니다! 📚');
+        }
+
+        // 독서 목록 표시
+        function displayBooks(filteredBooks = null) {
+            const booksToShow = filteredBooks || books;
+
+            if (booksToShow.length === 0) {
+                readingContainer.innerHTML = '<div class="empty-state"><p>독서 기록이 없습니다. 첫 번째 독서 기록을 남겨보세요! 📚</p></div>';
+                return;
+            }
+
+            readingContainer.innerHTML = booksToShow.map(book => {
+                const progress = book.totalPages > 0 ? (book.currentPage / book.totalPages) * 100 : 0;
+                const statusClass = `status-${book.status}`;
+                const statusText = {
+                    reading: '읽는 중',
+                    completed: '완독',
+                    paused: '잠시 중단'
+                };
+
+                return `
+                    <div class="reading-item">
+                        <div class="book-header">
+                            <div class="book-info">
+                                <div class="book-title">${book.title}</div>
+                                <div class="book-author">저자: ${book.author}</div>
+                                <div class="book-meta">
+                                    <span>${new Date(book.date).toLocaleDateString('ko-KR')}</span>
+                                    <span class="genre-tag">${book.genre}</span>
+                                    <span class="reading-status ${statusClass}">${statusText[book.status]}</span>
+                                    ${book.totalPages > 0 ? `<span>${book.currentPage}/${book.totalPages} 페이지</span>` : ''}
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                ${book.rating > 0 ? `<div class="rating-display">${'★'.repeat(book.rating)}</div>` : ''}
+                                <button class="delete-btn" onclick="deleteBook(${book.id})">삭제</button>
+                            </div>
+                        </div>
+                        
+                        ${book.totalPages > 0 ? `
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%"></div>
+                            </div>
+                        ` : ''}
+
+                        ${book.quote ? `
+                            <div class="quote-section">
+                                <div class="quote-text">"${book.quote}"</div>
+                                ${book.quotePage > 0 ? `<div class="quote-page">- ${book.quotePage}페이지</div>` : ''}
+                            </div>
+                        ` : ''}
+
+                        ${book.thoughts ? `
+                            <div class="thoughts">
+                                <div class="thoughts-title">💭 생각과 감상</div>
+                                <div>${book.thoughts.replace(/\n/g, '<br>')}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 독서 기록 삭제
+        function deleteBook(id) {
+            if (confirm('정말 이 독서 기록을 삭제하시겠습니까?')) {
+                books = books.filter(book => book.id !== id);
+                localStorage.setItem('books', JSON.stringify(books));
+                displayBooks();
+                updateStats();
+            }
+        }
+
+        // 필터링
+        function filterBooks() {
+            const searchTerm = searchBox.value.toLowerCase();
+            const genreFilter = document.getElementById('genreFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            let filtered = books;
+
+            if (searchTerm) {
+                filtered = filtered.filter(book => 
+                    book.title.toLowerCase().includes(searchTerm) ||
+                    book.author.toLowerCase().includes(searchTerm) ||
+                    book.quote.toLowerCase().includes(searchTerm) ||
+                    book.thoughts.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (genreFilter) {
+                filtered = filtered.filter(book => book.genre === genreFilter);
+            }
+
+            if (statusFilter) {
+                filtered = filtered.filter(book => book.status === statusFilter);
+            }
+
+            displayBooks(filtered);
+        }
+
+        // 통계 업데이트
+        function updateStats() {
+            const totalBooksEl = document.getElementById('totalBooks');
+            const completedBooksEl = document.getElementById('completedBooks');
+            const totalPagesEl = document.getElementById('totalPages');
+            const avgRatingEl = document.getElementById('avgRating');
+            const thisMonthBooksEl = document.getElementById('thisMonthBooks');
+
+            // 총 도서 수
+            totalBooksEl.textContent = books.length;
+
+            // 완독한 책 수
+            const completedCount = books.filter(book => book.status === 'completed').length;
+            completedBooksEl.textContent = completedCount;
+
+            // 총 페이지 수
+            const totalPages = books.reduce((sum, book) => sum + (book.totalPages || 0), 0);
+            totalPagesEl.textContent = totalPages.toLocaleString();
+
+            // 평균 평점
+            const ratedBooks = books.filter(book => book.rating > 0);
+            const avgRating = ratedBooks.length > 0 
+                ? (ratedBooks.reduce((sum, book) => sum + book.rating, 0) / ratedBooks.length).toFixed(1)
+                : 0;
+            avgRatingEl.textContent = avgRating;
+
+            // 이번 달 읽은 책
+            const thisMonth = new Date().getMonth();
+            const thisYear = new Date().getFullYear();
+            const thisMonthCount = books.filter(book => {
+                const bookDate = new Date(book.date);
+                return bookDate.getMonth() === thisMonth && bookDate.getFullYear() === thisYear;
+            }).length;
+            thisMonthBooksEl.textContent = thisMonthCount;
+        }
+    </script>
+</body>
+</html>
