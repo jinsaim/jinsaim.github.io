@@ -1134,6 +1134,8 @@
         function importFromQR() {
             const input = document.getElementById('qrDataInput').value.trim();
             
+            console.log('importFromQR 호출됨, 입력값:', input ? input.substring(0, 100) + '...' : '비어있음');
+            
             if (!input) {
                 alert('URL 또는 데이터를 입력해주세요.');
                 return;
@@ -1144,6 +1146,7 @@
                 
                 // URL에서 데이터 추출
                 if (input.includes('?data=')) {
+                    console.log('URL 형식 데이터 감지');
                     const urlParams = new URLSearchParams(input.split('?')[1]);
                     const encodedData = urlParams.get('data');
                     
@@ -1151,10 +1154,14 @@
                         throw new Error('URL에 데이터가 없습니다.');
                     }
                     
+                    console.log('인코딩된 데이터 길이:', encodedData.length);
+                    
                     // base64 디코딩
                     const decodedData = decodeURIComponent(escape(atob(encodedData)));
+                    console.log('디코딩된 데이터 일부:', decodedData.substring(0, 200) + '...');
                     dataToImport = JSON.parse(decodedData);
                 } else {
+                    console.log('직접 JSON 데이터로 시도');
                     // 직접 JSON 데이터인 경우
                     dataToImport = JSON.parse(input);
                 }
@@ -1162,6 +1169,8 @@
                 if (!dataToImport.books || !Array.isArray(dataToImport.books)) {
                     throw new Error('올바르지 않은 데이터 형식입니다.');
                 }
+
+                console.log('가져올 책 개수:', dataToImport.books.length);
 
                 const importedBooks = dataToImport.books;
                 let newBooks = 0;
@@ -1204,7 +1213,8 @@
                 alert(`QR 코드 데이터 가져오기 완료! 📱\n새로운 책: ${newBooks}개\n업데이트된 책: ${updatedBooks}개`);
 
             } catch (error) {
-                alert('데이터를 읽는 중 오류가 발생했습니다: ' + error.message);
+                console.error('데이터 가져오기 오류:', error);
+                alert('데이터를 읽는 중 오류가 발생했습니다: ' + error.message + '\n\n입력된 데이터를 확인해주세요.');
             }
         }
 
@@ -1214,14 +1224,33 @@
             const encodedData = urlParams.get('data');
             
             if (encodedData) {
-                // URL에서 data 파라미터 제거
+                console.log('URL에서 QR 데이터 감지됨:', encodedData.substring(0, 50) + '...');
+                
+                // 원본 URL 저장 (data 파라미터 포함)
+                const originalUrl = window.location.href;
+                
+                // URL에서 data 파라미터 제거 (브라우저 주소창 정리용)
                 const newUrl = window.location.origin + window.location.pathname;
                 window.history.replaceState({}, document.title, newUrl);
                 
                 // 데이터 가져오기 확인
                 if (confirm('QR 코드에서 독서 기록 데이터가 감지되었습니다.\n데이터를 가져오시겠습니까?')) {
-                    document.getElementById('qrDataInput').value = window.location.href;
-                    showQRScanner();
+                    // 원본 URL을 입력 필드에 설정하고 자동으로 가져오기 실행
+                    const dataInput = document.getElementById('qrDataInput');
+                    if (dataInput) {
+                        dataInput.value = originalUrl;
+                    }
+                    
+                    // 자동으로 데이터 가져오기 실행
+                    try {
+                        importFromQR();
+                    } catch (error) {
+                        console.error('자동 데이터 가져오기 실패:', error);
+                        // 실패 시 수동으로 스캔 모달 표시
+                        showQRScanner();
+                    }
+                } else {
+                    console.log('사용자가 데이터 가져오기를 취소했습니다.');
                 }
             }
         }
@@ -1284,6 +1313,15 @@
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">QR 코드 데이터 입력:</label>
                     <textarea id="qrDataInput" placeholder="QR 코드로 얻은 URL을 여기에 붙여넣기하거나 JSON 데이터를 직접 입력하세요..." style="width: 100%; height: 120px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical;"></textarea>
+                </div>
+                
+                <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <h4 style="color: #6B46C1; margin-bottom: 10px;">📱 사용 방법:</h4>
+                    <ul style="color: #666; font-size: 14px; line-height: 1.5; margin: 0; padding-left: 20px;">
+                        <li><strong>QR 스캔 후:</strong> 링크를 복사해서 위 입력칸에 붙여넣기</li>
+                        <li><strong>자동 감지:</strong> QR 링크로 접속하면 자동으로 데이터 가져오기 제안</li>
+                        <li><strong>수동 입력:</strong> JSON 데이터를 직접 입력 가능</li>
+                    </ul>
                 </div>
                 
                 <div style="text-align: center; margin-top: 20px;">
