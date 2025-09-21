@@ -1069,7 +1069,14 @@
                 if (shareContent) shareContent.style.display = 'block';
                 if (scanContent) scanContent.style.display = 'none';
                 if (modalTitle) modalTitle.textContent = '📱 QR 코드로 데이터 공유';
-                if (modal) modal.style.display = 'block';
+                if (modal) {
+                    modal.style.display = 'block';
+                    // 모달 내 첫 번째 포커스 가능한 요소에 포커스
+                    setTimeout(() => {
+                        const firstFocusable = modal.querySelector('button, input, textarea, [tabindex]:not([tabindex="-1"])');
+                        if (firstFocusable) firstFocusable.focus();
+                    }, 100);
+                }
 
             } catch (error) {
                 console.error('generateQR 오류:', error);
@@ -1079,16 +1086,34 @@
 
         // QR 코드 스캔 모달 표시
         function showQRScanner() {
-            document.getElementById('qrShareContent').style.display = 'none';
-            document.getElementById('qrScanContent').style.display = 'block';
-            document.getElementById('qrModalTitle').textContent = '📷 QR 코드 스캔';
-            document.getElementById('qrDataInput').value = '';
-            document.getElementById('qrModal').style.display = 'block';
+            const shareContent = document.getElementById('qrShareContent');
+            const scanContent = document.getElementById('qrScanContent');
+            const modalTitle = document.getElementById('qrModalTitle');
+            const dataInput = document.getElementById('qrDataInput');
+            const modal = document.getElementById('qrModal');
+            
+            if (shareContent) shareContent.style.display = 'none';
+            if (scanContent) scanContent.style.display = 'block';
+            if (modalTitle) modalTitle.textContent = '📷 QR 코드 스캔';
+            if (dataInput) dataInput.value = '';
+            if (modal) {
+                modal.style.display = 'block';
+                // 텍스트 영역에 포커스
+                setTimeout(() => {
+                    if (dataInput) dataInput.focus();
+                }, 100);
+            }
         }
 
         // QR 코드 모달 닫기
         function closeQRModal() {
-            document.getElementById('qrModal').style.display = 'none';
+            const modal = document.getElementById('qrModal');
+            if (modal) {
+                modal.style.display = 'none';
+                // 포커스를 모달을 연 버튼으로 복원 (접근성 개선)
+                const triggerButton = document.querySelector('.btn-qr');
+                if (triggerButton) triggerButton.focus();
+            }
         }
 
         // QR URL 복사
@@ -1213,12 +1238,22 @@
                 closeQRModal();
             }
         }
+
+        // 키보드 이벤트 처리 (ESC 키로 모달 닫기)
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('qrModal');
+                if (modal && modal.style.display === 'block') {
+                    closeQRModal();
+                }
+            }
+        });
     </script>
 
     <!-- QR 코드 모달 -->
-    <div id="qrModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
-        <div style="background-color: white; margin: 5% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 500px; position: relative;">
-            <span onclick="closeQRModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 20px;">&times;</span>
+    <div id="qrModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);" role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
+        <div style="background-color: white; margin: 5% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 500px; position: relative;" tabindex="-1">
+            <span onclick="closeQRModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 20px;" aria-label="닫기" tabindex="0">&times;</span>
             <h2 id="qrModalTitle" style="margin-bottom: 20px; color: #6B46C1;">📱 QR 코드로 데이터 공유</h2>
             
             <!-- QR 코드 생성 화면 -->
