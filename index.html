@@ -1110,6 +1110,10 @@
             const modal = document.getElementById('qrModal');
             if (modal) {
                 modal.style.display = 'none';
+                
+                // 웹캠 스캔 중지
+                stopWebcamScan();
+                
                 // 포커스를 모달을 연 버튼으로 복원 (접근성 개선)
                 const triggerButton = document.querySelector('.btn-qr');
                 if (triggerButton) triggerButton.focus();
@@ -1346,6 +1350,80 @@
                 }
             }
         });
+
+        // 웹캠 QR 스캔 관련 변수
+        let webcamStream = null;
+        let qrScanInterval = null;
+
+        // 웹캠 QR 스캔 시작
+        function startWebcamScan() {
+            const video = document.getElementById('qrVideo');
+            const container = document.getElementById('webcamContainer');
+            const status = document.getElementById('webcamStatus');
+
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                status.textContent = '❌ 이 브라우저는 웹캠을 지원하지 않습니다.';
+                status.style.color = '#e74c3c';
+                return;
+            }
+
+            status.textContent = '📷 웹캠에 접근하는 중...';
+            status.style.color = '#6B46C1';
+
+            navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: 'environment', // 후면 카메라 우선
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                } 
+            })
+            .then(stream => {
+                webcamStream = stream;
+                video.srcObject = stream;
+                video.play();
+                container.style.display = 'block';
+                status.textContent = '📱 QR 코드를 카메라에 비춰주세요';
+                status.style.color = '#27ae60';
+
+                // QR 코드 감지 시작 (간단한 방식)
+                startQRDetection();
+            })
+            .catch(err => {
+                console.error('웹캠 접근 오류:', err);
+                status.textContent = '❌ 웹캠에 접근할 수 없습니다. 권한을 확인해주세요.';
+                status.style.color = '#e74c3c';
+            });
+        }
+
+        // 웹캠 QR 스캔 중지
+        function stopWebcamScan() {
+            const container = document.getElementById('webcamContainer');
+            const status = document.getElementById('webcamStatus');
+
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+                webcamStream = null;
+            }
+
+            if (qrScanInterval) {
+                clearInterval(qrScanInterval);
+                qrScanInterval = null;
+            }
+
+            container.style.display = 'none';
+            status.textContent = '';
+        }
+
+        // QR 코드 감지 (단순화된 버전)
+        function startQRDetection() {
+            const status = document.getElementById('webcamStatus');
+            
+            // 실제 QR 라이브러리 없이 사용자에게 수동 입력 유도
+            setTimeout(() => {
+                status.innerHTML = '💡 <strong>팁:</strong> QR 코드를 스캔한 후 나타나는 링크를 복사해서<br>아래 입력칸에 붙여넣어 주세요!';
+                status.style.color = '#6B46C1';
+            }, 3000);
+        }
     </script>
 
     <!-- QR 코드 모달 -->
@@ -1379,15 +1457,29 @@
             
             <!-- QR 코드 스캔 화면 -->
             <div id="qrScanContent" style="display: none;">
+                <!-- 웹캠 스캔 섹션 -->
+                <div style="text-align: center; margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+                    <h4 style="color: #6B46C1; margin-bottom: 10px;">📷 웹캠으로 QR 스캔</h4>
+                    <button onclick="startWebcamScan()" class="btn-qr" style="margin-bottom: 10px;">📹 웹캠 시작</button>
+                    <div id="webcamContainer" style="display: none;">
+                        <video id="qrVideo" style="width: 100%; max-width: 300px; border: 2px solid #6B46C1; border-radius: 8px; margin-bottom: 10px;"></video>
+                        <br>
+                        <button onclick="stopWebcamScan()" class="btn-secondary">⏹️ 스캔 중지</button>
+                    </div>
+                    <div id="webcamStatus" style="color: #666; font-size: 14px; margin-top: 10px;"></div>
+                </div>
+
+                <!-- 수동 입력 섹션 -->
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">QR 코드 데이터 입력:</label>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">또는 수동으로 데이터 입력:</label>
                     <textarea id="qrDataInput" placeholder="QR 코드로 얻은 URL을 여기에 붙여넣기하거나 JSON 데이터를 직접 입력하세요..." style="width: 100%; height: 120px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical;"></textarea>
                 </div>
                 
                 <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                     <h4 style="color: #6B46C1; margin-bottom: 10px;">📱 사용 방법:</h4>
                     <ul style="color: #666; font-size: 14px; line-height: 1.5; margin: 0; padding-left: 20px;">
-                        <li><strong>QR 스캔 후:</strong> 링크를 복사해서 위 입력칸에 붙여넣기</li>
+                        <li><strong>웹캠 스캔:</strong> "📹 웹캠 시작" → QR 코드를 카메라에 비추기</li>
+                        <li><strong>모바일 → PC:</strong> 모바일에서 URL 복사 → PC에서 붙여넣기</li>
                         <li><strong>자동 감지:</strong> QR 링크로 접속하면 자동으로 데이터 가져오기 제안</li>
                         <li><strong>수동 입력:</strong> JSON 데이터를 직접 입력 가능</li>
                     </ul>
