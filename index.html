@@ -1109,14 +1109,19 @@
         function closeQRModal() {
             const modal = document.getElementById('qrModal');
             if (modal) {
-                modal.style.display = 'none';
+                console.log('QR 모달 닫기 - 웹캠 중지 시작');
                 
-                // 웹캠 스캔 중지
+                // 웹캠 스캔 완전히 중지
                 stopWebcamScan();
+                
+                // 모달 숨기기
+                modal.style.display = 'none';
                 
                 // 포커스를 모달을 연 버튼으로 복원 (접근성 개선)
                 const triggerButton = document.querySelector('.btn-qr');
                 if (triggerButton) triggerButton.focus();
+                
+                console.log('QR 모달 닫기 완료');
             }
         }
 
@@ -1361,6 +1366,15 @@
             const container = document.getElementById('webcamContainer');
             const status = document.getElementById('webcamStatus');
 
+            // 이미 웹캠이 실행 중인 경우 먼저 중지
+            if (webcamStream) {
+                console.log('기존 웹캠 스트림 중지 중...');
+                stopWebcamScan();
+                // 잠시 대기 후 재시작
+                setTimeout(() => startWebcamScan(), 500);
+                return;
+            }
+
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 status.textContent = '❌ 이 브라우저는 웹캠을 지원하지 않습니다.';
                 status.style.color = '#e74c3c';
@@ -1370,6 +1384,8 @@
             status.textContent = '📷 웹캠에 접근하는 중...';
             status.style.color = '#6B46C1';
 
+            console.log('웹캠 권한 요청 시작');
+
             navigator.mediaDevices.getUserMedia({ 
                 video: { 
                     facingMode: 'environment', // 후면 카메라 우선
@@ -1378,41 +1394,122 @@
                 } 
             })
             .then(stream => {
+                console.log('웹캠 스트림 획득 성공');
                 webcamStream = stream;
-                video.srcObject = stream;
-                video.play();
-                container.style.display = 'block';
-                status.textContent = '📱 QR 코드를 카메라에 비춰주세요';
-                status.style.color = '#27ae60';
+                
+                if (video) {
+                    video.srcObject = stream;
+                    video.play().then(() => {
+                        console.log('비디오 재생 시작');
+                        container.style.display = 'block';
+                        status.textContent = '📱 QR 코드를 카메라에 비춰주세요 (스캔 후 링크 복사하여 아래에 붙여넣기)';
+                        status.style.color = '#27ae60';
 
-                // QR 코드 감지 시작 (간단한 방식)
-                startQRDetection();
+                        // QR 코드 감지 시작
+                        startQRDetection();
+                    }).catch(err => {
+                        console.error('비디오 재생 오류:', err);
+                        status.textContent = '❌ 비디오 재생에 실패했습니다.';
+                        status.style.color = '#e74c3c';
+                        stopWebcamScan();
+                    });
+                }
             })
             .catch(err => {
                 console.error('웹캠 접근 오류:', err);
-                status.textContent = '❌ 웹캠에 접근할 수 없습니다. 권한을 확인해주세요.';
+                let errorMessage = '❌ 웹캠에 접근할 수 없습니다.';
+                
+                if (err.name === 'NotAllowedError') {
+                    errorMessage = '❌ 카메라 권한이 거부되었습니다. 브라우저 설정에서 카메라 권한을 허용해주세요.';
+                } else if (err.name === 'NotFoundError') {
+                    errorMessage = '❌ 카메라를 찾을 수 없습니다. 카메라가 연결되어 있는지 확인해주세요.';
+                } else if (err.name === 'NotReadableError') {
+                    errorMessage = '❌ 카메라가 다른 애플리케이션에서 사용 중입니다.';
+                }
+                
+                status.textContent = errorMessage;
                 status.style.color = '#e74c3c';
             });
         }
 
         // 웹캠 QR 스캔 중지
         function stopWebcamScan() {
+            const video = document.getElementById('qrVideo');
             const container = document.getElementById('webcamContainer');
             const status = document.getElementById('webcamStatus');
 
+            console.log('웹캠 스캔 중지 시작');
+
+            // 비디오 스트림 완전히 중지
             if (webcamStream) {
-                webcamStream.getTracks().forEach(track => track.stop());
+                console.log('웹캠 스트림 중지 중...');
+                webcamStream.getTracks().forEach(track => {
+                    console.log('트랙 중지:', track.kind, track.label);
+                    track.stop();
+                });
                 webcamStream = null;
+                console.log('웹캠 스트림 완전히 중지됨');
             }
 
+            // 비디오 요소 정리
+            if (video) {
+                video.srcObject = null;
+                video.pause();
+                console.log('비디오 요소 정리 완료');
+            }
+
+            // QR 감지 인터벌 중지
             if (qrScanInterval) {
                 clearInterval(qrScanInterval);
                 qrScanInterval = null;
+                console.log('QR 감지 인터벌 중지됨');
             }
 
-            container.style.display = 'none';
-            status.textContent = '';
+            // UI 초기화
+            if (container) {
+                container.style.display = 'none';
+            }
+            if (status) {
+                status.textContent = '📷 웹캠이 중지되었습니다.';
+                status.style.color = '#666';
+                
+                // 3초 후 상태 메시지 제거
+                setTimeout(() => {
+                    if (status) status.textContent = '';
+                }, 3000);
+            }
+
+            console.log('웹캠 스캔 중지 완료');
         }
+
+        // 페이지를 떠날 때 웹캠 자동 중지
+        window.addEventListener('beforeunload', function() {
+            console.log('페이지 언로드 - 웹캠 자동 중지');
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => {
+                    console.log('언로드 시 트랙 중지:', track.kind);
+                    track.stop();
+                });
+                webcamStream = null;
+            }
+        });
+
+        // 브라우저 탭 변경 시 웹캠 일시 중지
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && webcamStream) {
+                console.log('탭 숨김 - 웹캠 일시 중지');
+                const video = document.getElementById('qrVideo');
+                if (video) {
+                    video.pause();
+                }
+            } else if (!document.hidden && webcamStream) {
+                console.log('탭 표시 - 웹캠 재개');
+                const video = document.getElementById('qrVideo');
+                if (video) {
+                    video.play();
+                }
+            }
+        });
 
         // QR 코드 감지 (단순화된 버전)
         function startQRDetection() {
@@ -1460,13 +1557,13 @@
                 <!-- 웹캠 스캔 섹션 -->
                 <div style="text-align: center; margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
                     <h4 style="color: #6B46C1; margin-bottom: 10px;">📷 웹캠으로 QR 스캔</h4>
-                    <button onclick="startWebcamScan()" class="btn-qr" style="margin-bottom: 10px;">📹 웹캠 시작</button>
+                    <button id="webcamStartBtn" onclick="startWebcamScan()" class="btn-qr" style="margin-bottom: 10px;">📹 웹캠 시작</button>
                     <div id="webcamContainer" style="display: none;">
-                        <video id="qrVideo" style="width: 100%; max-width: 300px; border: 2px solid #6B46C1; border-radius: 8px; margin-bottom: 10px;"></video>
+                        <video id="qrVideo" style="width: 100%; max-width: 300px; border: 2px solid #6B46C1; border-radius: 8px; margin-bottom: 10px;" autoplay muted playsinline></video>
                         <br>
                         <button onclick="stopWebcamScan()" class="btn-secondary">⏹️ 스캔 중지</button>
                     </div>
-                    <div id="webcamStatus" style="color: #666; font-size: 14px; margin-top: 10px;"></div>
+                    <div id="webcamStatus" style="color: #666; font-size: 14px; margin-top: 10px; min-height: 20px;"></div>
                 </div>
 
                 <!-- 수동 입력 섹션 -->
