@@ -972,6 +972,192 @@
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(checkBackupReminder, 5000); // 5초 후 체크
         });
+
+        // QR 코드 생성
+        function generateQR() {
+            if (books.length === 0) {
+                alert('공유할 독서 기록이 없습니다.');
+                return;
+            }
+
+            const dataToShare = {
+                books: books,
+                exportDate: new Date().toISOString(),
+                totalBooks: books.length,
+                version: '1.0',
+                source: 'qr'
+            };
+
+            // 데이터를 base64로 인코딩
+            const jsonString = JSON.stringify(dataToShare);
+            const encodedData = btoa(unescape(encodeURIComponent(jsonString)));
+            
+            // 현재 사이트 URL에 데이터 파라미터 추가
+            const currentUrl = window.location.origin + window.location.pathname;
+            const shareUrl = `${currentUrl}?data=${encodedData}`;
+
+            // QR 코드 생성
+            const canvas = document.getElementById('qrCanvas');
+            QRCode.toCanvas(canvas, shareUrl, {
+                width: 300,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            }, function (error) {
+                if (error) {
+                    console.error('QR 코드 생성 실패:', error);
+                    alert('QR 코드 생성에 실패했습니다: ' + error.message);
+                } else {
+                    // URL 표시
+                    document.getElementById('qrUrlDisplay').value = shareUrl;
+                    
+                    // 모달 표시
+                    document.getElementById('qrShareContent').style.display = 'block';
+                    document.getElementById('qrScanContent').style.display = 'none';
+                    document.getElementById('qrModalTitle').textContent = '📱 QR 코드로 데이터 공유';
+                    document.getElementById('qrModal').style.display = 'block';
+                }
+            });
+        }
+
+        // QR 코드 스캔 모달 표시
+        function showQRScanner() {
+            document.getElementById('qrShareContent').style.display = 'none';
+            document.getElementById('qrScanContent').style.display = 'block';
+            document.getElementById('qrModalTitle').textContent = '📷 QR 코드 스캔';
+            document.getElementById('qrDataInput').value = '';
+            document.getElementById('qrModal').style.display = 'block';
+        }
+
+        // QR 코드 모달 닫기
+        function closeQRModal() {
+            document.getElementById('qrModal').style.display = 'none';
+        }
+
+        // QR URL 복사
+        function copyQRUrl() {
+            const urlInput = document.getElementById('qrUrlDisplay');
+            urlInput.select();
+            urlInput.setSelectionRange(0, 99999); // 모바일 지원
+            
+            try {
+                document.execCommand('copy');
+                alert('URL이 클립보드에 복사되었습니다! 📋');
+            } catch (err) {
+                alert('복사에 실패했습니다. URL을 수동으로 복사해주세요.');
+            }
+        }
+
+        // QR 코드에서 데이터 가져오기
+        function importFromQR() {
+            const input = document.getElementById('qrDataInput').value.trim();
+            
+            if (!input) {
+                alert('URL 또는 데이터를 입력해주세요.');
+                return;
+            }
+
+            try {
+                let dataToImport;
+                
+                // URL에서 데이터 추출
+                if (input.includes('?data=')) {
+                    const urlParams = new URLSearchParams(input.split('?')[1]);
+                    const encodedData = urlParams.get('data');
+                    
+                    if (!encodedData) {
+                        throw new Error('URL에 데이터가 없습니다.');
+                    }
+                    
+                    // base64 디코딩
+                    const decodedData = decodeURIComponent(escape(atob(encodedData)));
+                    dataToImport = JSON.parse(decodedData);
+                } else {
+                    // 직접 JSON 데이터인 경우
+                    dataToImport = JSON.parse(input);
+                }
+
+                if (!dataToImport.books || !Array.isArray(dataToImport.books)) {
+                    throw new Error('올바르지 않은 데이터 형식입니다.');
+                }
+
+                const importedBooks = dataToImport.books;
+                let newBooks = 0;
+                let updatedBooks = 0;
+
+                // 기존 책과 새로운 책 병합
+                importedBooks.forEach(importedBook => {
+                    const existingIndex = books.findIndex(book => 
+                        book.id === importedBook.id || 
+                        (book.title === importedBook.title && book.author === importedBook.author)
+                    );
+
+                    if (existingIndex !== -1) {
+                        const existingCreatedAt = new Date(books[existingIndex].createdAt || 0);
+                        const importedCreatedAt = new Date(importedBook.createdAt || 0);
+                        
+                        if (importedCreatedAt > existingCreatedAt) {
+                            books[existingIndex] = { ...importedBook };
+                            updatedBooks++;
+                        }
+                    } else {
+                        books.push({ ...importedBook, id: Date.now() + Math.random() });
+                        newBooks++;
+                    }
+                });
+
+                // 날짜순 정렬
+                books.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                // 로컬 스토리지 저장
+                localStorage.setItem('books', JSON.stringify(books));
+
+                // 화면 업데이트
+                displayBooks();
+                updateStats();
+
+                // 모달 닫기
+                closeQRModal();
+
+                alert(`QR 코드 데이터 가져오기 완료! 📱\n새로운 책: ${newBooks}개\n업데이트된 책: ${updatedBooks}개`);
+
+            } catch (error) {
+                alert('데이터를 읽는 중 오류가 발생했습니다: ' + error.message);
+            }
+        }
+
+        // 페이지 로드 시 URL 파라미터 확인
+        function checkURLData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedData = urlParams.get('data');
+            
+            if (encodedData) {
+                // URL에서 data 파라미터 제거
+                const newUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+                
+                // 데이터 가져오기 확인
+                if (confirm('QR 코드에서 독서 기록 데이터가 감지되었습니다.\n데이터를 가져오시겠습니까?')) {
+                    document.getElementById('qrDataInput').value = window.location.href;
+                    showQRScanner();
+                }
+            }
+        }
+
+        // 페이지 로드 시 URL 데이터 확인
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(checkURLData, 1000); // 1초 후 체크
+        });
+
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('qrModal');
+            if (event.target === modal) {
+                closeQRModal();
+            }
+        }
     </script>
 </body>
 </html>

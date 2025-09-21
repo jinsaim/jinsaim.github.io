@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📚 독서 기록장</title>
+    
+    <!-- QR 코드 생성 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -198,6 +201,83 @@
             color: #666;
             margin-top: 10px;
             line-height: 1.5;
+        }
+
+        .qr-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .qr-modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .qr-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: -20px;
+        }
+
+        .qr-close:hover {
+            color: #000;
+        }
+
+        .qr-code-container {
+            margin: 20px 0;
+        }
+
+        .qr-instructions {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .qr-url-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            background: #f9f9f9;
+        }
+
+        .btn-qr {
+            background: linear-gradient(45deg, #9c27b0, #e91e63);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .btn-qr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
         }
 
         .stats {
@@ -533,6 +613,8 @@
                 <div class="sync-buttons">
                     <button class="btn-secondary" onclick="exportData()">📤 데이터 내보내기</button>
                     <button class="btn-secondary" onclick="document.getElementById('importFile').click()">📥 데이터 가져오기</button>
+                    <button class="btn-qr" onclick="generateQR()">📱 QR 코드로 공유</button>
+                    <button class="btn-qr" onclick="showQRScanner()">📷 QR 코드 스캔</button>
                     <button class="btn-secondary" onclick="clearAllData()">🗑️ 모든 데이터 삭제</button>
                 </div>
                 
@@ -542,6 +624,8 @@
                     💡 <strong>사용법:</strong><br>
                     • <strong>내보내기:</strong> 현재 기기의 독서 기록을 JSON 파일로 다운로드<br>
                     • <strong>가져오기:</strong> 다른 기기에서 내보낸 JSON 파일을 업로드하여 병합<br>
+                    • <strong>QR 코드 공유:</strong> 데이터를 QR 코드로 생성해서 다른 기기에서 스캔<br>
+                    • <strong>QR 코드 스캔:</strong> 다른 기기에서 생성한 QR 코드를 스캔해서 데이터 가져오기<br>
                     • 기존 데이터와 새 데이터가 자동으로 병합됩니다
                 </div>
             </div>
@@ -972,6 +1056,232 @@
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(checkBackupReminder, 5000); // 5초 후 체크
         });
+
+        // QR 코드 생성
+        function generateQR() {
+            if (books.length === 0) {
+                alert('공유할 독서 기록이 없습니다.');
+                return;
+            }
+
+            const dataToShare = {
+                books: books,
+                exportDate: new Date().toISOString(),
+                totalBooks: books.length,
+                version: '1.0',
+                source: 'qr'
+            };
+
+            // 데이터를 base64로 인코딩
+            const jsonString = JSON.stringify(dataToShare);
+            const encodedData = btoa(unescape(encodeURIComponent(jsonString)));
+            
+            // 현재 사이트 URL에 데이터 파라미터 추가
+            const currentUrl = window.location.origin + window.location.pathname;
+            const shareUrl = `${currentUrl}?data=${encodedData}`;
+
+            // QR 코드 생성
+            const canvas = document.getElementById('qrCanvas');
+            QRCode.toCanvas(canvas, shareUrl, {
+                width: 300,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            }, function (error) {
+                if (error) {
+                    console.error('QR 코드 생성 실패:', error);
+                    alert('QR 코드 생성에 실패했습니다: ' + error.message);
+                } else {
+                    // URL 표시
+                    document.getElementById('qrUrlDisplay').value = shareUrl;
+                    
+                    // 모달 표시
+                    document.getElementById('qrShareContent').style.display = 'block';
+                    document.getElementById('qrScanContent').style.display = 'none';
+                    document.getElementById('qrModalTitle').textContent = '📱 QR 코드로 데이터 공유';
+                    document.getElementById('qrModal').style.display = 'block';
+                }
+            });
+        }
+
+        // QR 코드 스캔 모달 표시
+        function showQRScanner() {
+            document.getElementById('qrShareContent').style.display = 'none';
+            document.getElementById('qrScanContent').style.display = 'block';
+            document.getElementById('qrModalTitle').textContent = '📷 QR 코드 스캔';
+            document.getElementById('qrDataInput').value = '';
+            document.getElementById('qrModal').style.display = 'block';
+        }
+
+        // QR 코드 모달 닫기
+        function closeQRModal() {
+            document.getElementById('qrModal').style.display = 'none';
+        }
+
+        // QR URL 복사
+        function copyQRUrl() {
+            const urlInput = document.getElementById('qrUrlDisplay');
+            urlInput.select();
+            urlInput.setSelectionRange(0, 99999); // 모바일 지원
+            
+            try {
+                document.execCommand('copy');
+                alert('URL이 클립보드에 복사되었습니다! 📋');
+            } catch (err) {
+                alert('복사에 실패했습니다. URL을 수동으로 복사해주세요.');
+            }
+        }
+
+        // QR 코드에서 데이터 가져오기
+        function importFromQR() {
+            const input = document.getElementById('qrDataInput').value.trim();
+            
+            if (!input) {
+                alert('URL 또는 데이터를 입력해주세요.');
+                return;
+            }
+
+            try {
+                let dataToImport;
+                
+                // URL에서 데이터 추출
+                if (input.includes('?data=')) {
+                    const urlParams = new URLSearchParams(input.split('?')[1]);
+                    const encodedData = urlParams.get('data');
+                    
+                    if (!encodedData) {
+                        throw new Error('URL에 데이터가 없습니다.');
+                    }
+                    
+                    // base64 디코딩
+                    const decodedData = decodeURIComponent(escape(atob(encodedData)));
+                    dataToImport = JSON.parse(decodedData);
+                } else {
+                    // 직접 JSON 데이터인 경우
+                    dataToImport = JSON.parse(input);
+                }
+
+                if (!dataToImport.books || !Array.isArray(dataToImport.books)) {
+                    throw new Error('올바르지 않은 데이터 형식입니다.');
+                }
+
+                const importedBooks = dataToImport.books;
+                let newBooks = 0;
+                let updatedBooks = 0;
+
+                // 기존 책과 새로운 책 병합
+                importedBooks.forEach(importedBook => {
+                    const existingIndex = books.findIndex(book => 
+                        book.id === importedBook.id || 
+                        (book.title === importedBook.title && book.author === importedBook.author)
+                    );
+
+                    if (existingIndex !== -1) {
+                        const existingCreatedAt = new Date(books[existingIndex].createdAt || 0);
+                        const importedCreatedAt = new Date(importedBook.createdAt || 0);
+                        
+                        if (importedCreatedAt > existingCreatedAt) {
+                            books[existingIndex] = { ...importedBook };
+                            updatedBooks++;
+                        }
+                    } else {
+                        books.push({ ...importedBook, id: Date.now() + Math.random() });
+                        newBooks++;
+                    }
+                });
+
+                // 날짜순 정렬
+                books.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                // 로컬 스토리지 저장
+                localStorage.setItem('books', JSON.stringify(books));
+
+                // 화면 업데이트
+                displayBooks();
+                updateStats();
+
+                // 모달 닫기
+                closeQRModal();
+
+                alert(`QR 코드 데이터 가져오기 완료! 📱\n새로운 책: ${newBooks}개\n업데이트된 책: ${updatedBooks}개`);
+
+            } catch (error) {
+                alert('데이터를 읽는 중 오류가 발생했습니다: ' + error.message);
+            }
+        }
+
+        // 페이지 로드 시 URL 파라미터 확인
+        function checkURLData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedData = urlParams.get('data');
+            
+            if (encodedData) {
+                // URL에서 data 파라미터 제거
+                const newUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+                
+                // 데이터 가져오기 확인
+                if (confirm('QR 코드에서 독서 기록 데이터가 감지되었습니다.\n데이터를 가져오시겠습니까?')) {
+                    document.getElementById('qrDataInput').value = window.location.href;
+                    showQRScanner();
+                }
+            }
+        }
+
+        // 페이지 로드 시 URL 데이터 확인
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(checkURLData, 1000); // 1초 후 체크
+        });
+
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('qrModal');
+            if (event.target === modal) {
+                closeQRModal();
+            }
+        }
     </script>
+
+    <!-- QR 코드 모달 -->
+    <div id="qrModal" class="qr-modal">
+        <div class="qr-modal-content">
+            <span class="qr-close" onclick="closeQRModal()">&times;</span>
+            <h3 id="qrModalTitle">📱 QR 코드로 데이터 공유</h3>
+            
+            <div id="qrShareContent">
+                <p>아래 QR 코드를 다른 기기에서 스캔하세요:</p>
+                <div class="qr-code-container">
+                    <canvas id="qrCanvas"></canvas>
+                </div>
+                <div class="qr-instructions">
+                    📱 <strong>사용 방법:</strong><br>
+                    1. 다른 기기에서 이 QR 코드를 카메라로 촬영<br>
+                    2. 자동으로 URL이 열리면서 데이터가 전달됩니다<br>
+                    3. "QR 코드 스캔" 버튼을 눌러 데이터를 가져오세요
+                </div>
+                <input type="text" id="qrUrlDisplay" class="qr-url-input" readonly placeholder="생성된 URL이 여기에 표시됩니다">
+                <div>
+                    <button class="btn-qr" onclick="copyQRUrl()">🔗 URL 복사</button>
+                </div>
+            </div>
+
+            <div id="qrScanContent" style="display: none;">
+                <p>QR 코드에서 추출한 URL을 붙여넣거나 직접 입력하세요:</p>
+                <textarea id="qrDataInput" class="qr-url-input" placeholder="QR 코드 URL 또는 데이터를 여기에 붙여넣으세요..." rows="4"></textarea>
+                <div class="qr-instructions">
+                    📷 <strong>사용 방법:</strong><br>
+                    1. 다른 기기에서 생성된 QR 코드를 카메라로 스캔<br>
+                    2. 나타나는 긴 URL을 위 텍스트 박스에 붙여넣기<br>
+                    3. "데이터 가져오기" 버튼을 클릭
+                </div>
+                <div>
+                    <button class="btn-qr" onclick="importFromQR()">📥 데이터 가져오기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
