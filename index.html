@@ -1135,6 +1135,7 @@
             const input = document.getElementById('qrDataInput').value.trim();
             
             console.log('importFromQR 호출됨, 입력값:', input ? input.substring(0, 100) + '...' : '비어있음');
+            console.log('기존 책 개수:', books.length);
             
             if (!input) {
                 alert('URL 또는 데이터를 입력해주세요.');
@@ -1172,36 +1173,68 @@
 
                 console.log('가져올 책 개수:', dataToImport.books.length);
 
+                // 기존 books 배열의 깊은 복사본 생성 (원본 보호)
+                const originalBooks = [...books];
+                console.log('기존 데이터 백업 완료:', originalBooks.length, '개');
+
                 const importedBooks = dataToImport.books;
                 let newBooks = 0;
                 let updatedBooks = 0;
+                let skippedBooks = 0;
 
-                // 기존 책과 새로운 책 병합
-                importedBooks.forEach(importedBook => {
-                    const existingIndex = books.findIndex(book => 
+                // 기존 책과 새로운 책 병합 (기존 데이터 우선 보존)
+                importedBooks.forEach((importedBook, index) => {
+                    console.log(`처리 중 ${index + 1}/${importedBooks.length}: ${importedBook.title}`);
+                    
+                    const existingIndex = originalBooks.findIndex(book => 
                         book.id === importedBook.id || 
                         (book.title === importedBook.title && book.author === importedBook.author)
                     );
 
                     if (existingIndex !== -1) {
-                        const existingCreatedAt = new Date(books[existingIndex].createdAt || 0);
-                        const importedCreatedAt = new Date(importedBook.createdAt || 0);
+                        // 기존 책이 있는 경우
+                        const existingBook = originalBooks[existingIndex];
+                        const existingCreatedAt = new Date(existingBook.createdAt || existingBook.date || 0);
+                        const importedCreatedAt = new Date(importedBook.createdAt || importedBook.date || 0);
+                        
+                        console.log(`중복 발견: ${importedBook.title} - 기존: ${existingCreatedAt}, 가져온것: ${importedCreatedAt}`);
                         
                         if (importedCreatedAt > existingCreatedAt) {
-                            books[existingIndex] = { ...importedBook };
-                            updatedBooks++;
+                            // 가져온 데이터가 더 최신인 경우에만 업데이트
+                            const bookIndex = books.findIndex(book => 
+                                book.id === existingBook.id || 
+                                (book.title === existingBook.title && book.author === existingBook.author)
+                            );
+                            if (bookIndex !== -1) {
+                                books[bookIndex] = { ...importedBook };
+                                updatedBooks++;
+                                console.log(`업데이트됨: ${importedBook.title}`);
+                            }
+                        } else {
+                            skippedBooks++;
+                            console.log(`스킵됨 (기존이 최신): ${importedBook.title}`);
                         }
                     } else {
-                        books.push({ ...importedBook, id: Date.now() + Math.random() });
+                        // 새로운 책인 경우 추가
+                        const newBook = { 
+                            ...importedBook, 
+                            id: importedBook.id || Date.now() + Math.random(),
+                            createdAt: importedBook.createdAt || importedBook.date || new Date().toISOString()
+                        };
+                        books.push(newBook);
                         newBooks++;
+                        console.log(`새로 추가됨: ${importedBook.title}`);
                     }
                 });
 
+                console.log('병합 완료 - 전체:', books.length, '새로운:', newBooks, '업데이트:', updatedBooks, '스킵:', skippedBooks);
+
                 // 날짜순 정렬
-                books.sort((a, b) => new Date(b.date) - new Date(a.date));
+                books.sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
 
                 // 로컬 스토리지 저장
                 localStorage.setItem('books', JSON.stringify(books));
+                console.log('로컬스토리지 저장 완료:', books.length, '개');
 
                 // 화면 업데이트
                 displayBooks();
@@ -1210,7 +1243,12 @@
                 // 모달 닫기
                 closeQRModal();
 
-                alert(`QR 코드 데이터 가져오기 완료! 📱\n새로운 책: ${newBooks}개\n업데이트된 책: ${updatedBooks}개`);
+                alert(`QR 코드 데이터 가져오기 완료! 📱\n\n` + 
+                      `📊 결과:\n` +
+                      `• 전체 책: ${books.length}개\n` +
+                      `• 새로운 책: ${newBooks}개\n` + 
+                      `• 업데이트된 책: ${updatedBooks}개\n` +
+                      `• 유지된 책: ${skippedBooks}개`);
 
             } catch (error) {
                 console.error('데이터 가져오기 오류:', error);
@@ -1225,6 +1263,7 @@
             
             if (encodedData) {
                 console.log('URL에서 QR 데이터 감지됨:', encodedData.substring(0, 50) + '...');
+                console.log('현재 저장된 책 개수:', books.length);
                 
                 // 원본 URL 저장 (data 파라미터 포함)
                 const originalUrl = window.location.href;
@@ -1233,8 +1272,14 @@
                 const newUrl = window.location.origin + window.location.pathname;
                 window.history.replaceState({}, document.title, newUrl);
                 
+                // 현재 데이터가 있는 경우 병합임을 알림
+                const currentBookCount = books.length;
+                const message = currentBookCount > 0 
+                    ? `QR 코드에서 독서 기록 데이터가 감지되었습니다.\n\n현재 저장된 책: ${currentBookCount}개\n새 데이터와 병합하시겠습니까?\n\n※ 기존 데이터는 보존되며, 중복된 책은 최신 정보로 업데이트됩니다.`
+                    : `QR 코드에서 독서 기록 데이터가 감지되었습니다.\n데이터를 가져오시겠습니까?`;
+                
                 // 데이터 가져오기 확인
-                if (confirm('QR 코드에서 독서 기록 데이터가 감지되었습니다.\n데이터를 가져오시겠습니까?')) {
+                if (confirm(message)) {
                     // 원본 URL을 입력 필드에 설정하고 자동으로 가져오기 실행
                     const dataInput = document.getElementById('qrDataInput');
                     if (dataInput) {
