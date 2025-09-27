@@ -1,637 +1,1220 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 
-<html lang="ko">        .reading-item:hover {
+<html lang="ko"><html lang="ko">
 
-<head>            transform: translateY(-2px);
+<head><head>
 
-    <meta charset="UTF-8">        }
+    <meta charset="UTF-8">    <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>🌐 반응형 웹 디자인 연습</title>        .book-header {
+    <title>📱 모바일 도구모음</title>    <title>📱 모바일 도구모음</title>
 
-    <style>            display: flex;
+    <style>    <style>
 
-        /* 기본 리셋 */            justify-content: space-between;
+        * {        * {
 
-        * {            align-items: flex-start;
+            margin: 0;            margin: 0;
 
-            margin: 0;            margin-bottom: 15px;
+            padding: 0;            padding: 0;
 
-            padding: 0;        }
-
-            box-sizing: border-box;
-
-        }        .book-info {
-
-            flex: 1;
-
-        body {        }
-
-            font-family: 'Arial', sans-serif;
-
-            line-height: 1.6;        .book-title {
-
-            color: #333;            font-size: 20px;
-
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);            font-weight: bold;
-
-            min-height: 100vh;            color: #333;
-
-        }            margin-bottom: 5px;
-
-        }
-
-        /* 컨테이너 */
-
-        .container {        .book-author {
-
-            max-width: 1200px;            color: #666;
-
-            margin: 0 auto;            font-size: 16px;
-
-            padding: 0 20px;            margin-bottom: 5px;
+            box-sizing: border-box;            box-sizing: border-box;
 
         }        }
 
 
 
+        body {        body {
+
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+            background: #f5f7fa;            background: #f5f7fa;
+
+            color: #333;            color: #333;
+
+        }        }
+
+
+
+        .header {        /* 컨테이너 */
+
+            background: #fff;
+
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);        .container {        .book-author {
+
+            padding: 1rem;
+
+            text-align: center;            max-width: 1200px;            color: #666;
+
+            position: sticky;
+
+            top: 0;            margin: 0 auto;            font-size: 16px;
+
+            z-index: 100;
+
+        }            padding: 0 20px;            margin-bottom: 5px;
+
+
+
+        .header h1 {        }        }
+
+            font-size: 1.5rem;
+
+            color: #2c3e50;
+
+        }
+
         /* 헤더 */        .book-meta {
 
-        .header {            display: flex;
+        .container {
 
-            background: rgba(255, 255, 255, 0.95);            gap: 15px;
+            max-width: 1200px;        .header {            display: flex;
+
+            margin: 0 auto;
+
+            padding: 1rem;            background: rgba(255, 255, 255, 0.95);            gap: 15px;
+
+        }
 
             backdrop-filter: blur(10px);            font-size: 14px;
 
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);            color: #999;
+        .tools-grid {
 
-            position: sticky;            flex-wrap: wrap;
+            display: grid;            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);            color: #999;
 
-            top: 0;        }
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 
-            z-index: 1000;
+            gap: 1.5rem;            position: sticky;            flex-wrap: wrap;
 
-        }        .rating-display {
+            margin-top: 1rem;
 
-            font-size: 18px;
+        }            top: 0;        }
 
-        .nav {            color: #FFD700;
 
-            display: flex;        }
 
-            justify-content: space-between;
+        .tool-card {            z-index: 1000;
 
-            align-items: center;        .genre-tag {
+            background: #fff;
 
-            padding: 1rem 0;            background: #e3f2fd;
+            border-radius: 12px;        }        .rating-display {
 
-        }            color: #1976d2;
+            padding: 1.5rem;
 
-            padding: 4px 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);            font-size: 18px;
 
-        .logo {            border-radius: 15px;
+            transition: transform 0.2s;
 
-            font-size: 1.5rem;            font-size: 12px;
+        }        .nav {            color: #FFD700;
 
-            font-weight: bold;            font-weight: bold;
 
-            color: #667eea;        }
+
+        .tool-card:hover {            display: flex;        }
+
+            transform: translateY(-2px);
+
+        }            justify-content: space-between;
+
+
+
+        .tool-card h3 {            align-items: center;        .genre-tag {
+
+            color: #2c3e50;
+
+            margin-bottom: 1rem;            padding: 1rem 0;            background: #e3f2fd;
+
+            display: flex;
+
+            align-items: center;        }            color: #1976d2;
+
+            gap: 0.5rem;
+
+        }            padding: 4px 12px;
+
+
+
+        .tool-card .icon {        .logo {            border-radius: 15px;
+
+            font-size: 1.5rem;
+
+        }            font-size: 1.5rem;            font-size: 12px;
+
+
+
+        /* 계산기 스타일 */            font-weight: bold;            font-weight: bold;
+
+        .calculator {
+
+            display: grid;            color: #667eea;        }
+
+            gap: 0.5rem;
+
+            margin-top: 1rem;        }
 
         }
 
         .progress-bar {
 
-        .nav-menu {            background: #f0f0f0;
+        .calc-display {
 
-            display: flex;            border-radius: 10px;
+            background: #f8f9fa;        .nav-menu {            background: #f0f0f0;
 
-            list-style: none;            overflow: hidden;
+            border: 1px solid #ddd;
 
-            gap: 2rem;            height: 8px;
+            border-radius: 8px;            display: flex;            border-radius: 10px;
 
-        }            margin: 10px 0;
+            padding: 1rem;
 
-        }
+            font-size: 1.5rem;            list-style: none;            overflow: hidden;
 
-        .nav-link {
+            text-align: right;
 
-            text-decoration: none;        .progress-fill {
+            min-height: 60px;            gap: 2rem;            height: 8px;
 
-            color: #333;            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            display: flex;
 
-            font-weight: 500;            height: 100%;
+            align-items: center;        }            margin: 10px 0;
 
-            transition: color 0.3s ease;            transition: width 0.3s;
+            justify-content: flex-end;
 
         }        }
 
 
 
-        .nav-link:hover {        .quote-section {
+        .calc-buttons {        .nav-link {
 
-            color: #667eea;            background: #f8f9fa;
+            display: grid;
 
-        }            padding: 15px;
+            grid-template-columns: repeat(4, 1fr);            text-decoration: none;        .progress-fill {
 
-            border-left: 4px solid #2196F3;
+            gap: 0.5rem;
 
-        /* 모바일 메뉴 토글 */            border-radius: 5px;
+        }            color: #333;            background: linear-gradient(45deg, #2196F3, #21CBF3);
 
-        .hamburger {            margin: 15px 0;
 
-            display: none;            font-style: italic;
 
-            flex-direction: column;        }
+        .calc-btn {            font-weight: 500;            height: 100%;
+
+            background: #fff;
+
+            border: 1px solid #ddd;            transition: color 0.3s ease;            transition: width 0.3s;
+
+            border-radius: 8px;
+
+            padding: 1rem;        }        }
+
+            font-size: 1.1rem;
 
             cursor: pointer;
 
-            gap: 4px;        .quote-text {
+            transition: all 0.2s;
 
-        }            font-size: 16px;
-
-            line-height: 1.6;
-
-        .hamburger span {            margin-bottom: 8px;
-
-            width: 25px;        }
-
-            height: 3px;
-
-            background: #333;        .quote-page {
-
-            transition: 0.3s;            font-size: 12px;
-
-        }            color: #666;
-
-            text-align: right;
-
-        /* 메인 콘텐츠 */        }
-
-        .main {
-
-            padding: 4rem 0;        .thoughts {
-
-        }            margin-top: 15px;
-
-            padding: 15px;
-
-        .hero {            background: #fff8e1;
-
-            text-align: center;            border-radius: 8px;
-
-            margin-bottom: 4rem;            border-left: 4px solid #ffa726;
-
-            color: white;        }
+            touch-action: manipulation;        .nav-link:hover {        .quote-section {
 
         }
 
-        .thoughts-title {
+            color: #667eea;            background: #f8f9fa;
 
-        .hero h1 {            font-weight: bold;
+        .calc-btn:hover {
 
-            font-size: 3rem;            color: #333;
+            background: #f8f9fa;        }            padding: 15px;
 
-            margin-bottom: 1rem;            margin-bottom: 8px;
+        }
 
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);        }
+            border-left: 4px solid #2196F3;
+
+        .calc-btn:active {
+
+            transform: scale(0.95);        /* 모바일 메뉴 토글 */            border-radius: 5px;
+
+        }
+
+        .hamburger {            margin: 15px 0;
+
+        .calc-btn.operator {
+
+            background: #007bff;            display: none;            font-style: italic;
+
+            color: #fff;
+
+        }            flex-direction: column;        }
+
+
+
+        .calc-btn.equals {            cursor: pointer;
+
+            background: #28a745;
+
+            color: #fff;            gap: 4px;        .quote-text {
+
+        }
+
+        }            font-size: 16px;
+
+        .calc-btn.clear {
+
+            background: #dc3545;            line-height: 1.6;
+
+            color: #fff;
+
+        }        .hamburger span {            margin-bottom: 8px;
+
+
+
+        /* 투두리스트 스타일 */            width: 25px;        }
+
+        .todo-input {
+
+            display: flex;            height: 3px;
+
+            gap: 0.5rem;
+
+            margin-bottom: 1rem;            background: #333;        .quote-page {
+
+        }
+
+            transition: 0.3s;            font-size: 12px;
+
+        .todo-input input {
+
+            flex: 1;        }            color: #666;
+
+            padding: 0.75rem;
+
+            border: 1px solid #ddd;            text-align: right;
+
+            border-radius: 8px;
+
+            font-size: 1rem;        /* 메인 콘텐츠 */        }
+
+        }
+
+        .main {
+
+        .todo-input button {
+
+            background: #007bff;            padding: 4rem 0;        .thoughts {
+
+            color: #fff;
+
+            border: none;        }            margin-top: 15px;
+
+            border-radius: 8px;
+
+            padding: 0.75rem 1rem;            padding: 15px;
+
+            cursor: pointer;
+
+            font-size: 1rem;        .hero {            background: #fff8e1;
+
+        }
+
+            text-align: center;            border-radius: 8px;
+
+        .todo-list {
+
+            max-height: 300px;            margin-bottom: 4rem;            border-left: 4px solid #ffa726;
+
+            overflow-y: auto;
+
+        }            color: white;        }
+
+
+
+        .todo-item {        }
+
+            display: flex;
+
+            align-items: center;        .thoughts-title {
+
+            gap: 0.5rem;
+
+            padding: 0.75rem;        .hero h1 {            font-weight: bold;
+
+            background: #f8f9fa;
+
+            border-radius: 8px;            font-size: 3rem;            color: #333;
+
+            margin-bottom: 0.5rem;
+
+        }            margin-bottom: 1rem;            margin-bottom: 8px;
+
+
+
+        .todo-item.completed {            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);        }
+
+            opacity: 0.6;
+
+            text-decoration: line-through;        }
 
         }
 
         .delete-btn {
 
-        .hero p {            background: #dc3545;
+        .todo-item input[type="checkbox"] {
 
-            font-size: 1.2rem;            color: white;
+            width: 20px;        .hero p {            background: #dc3545;
 
-            margin-bottom: 2rem;            border: none;
+            height: 20px;
 
-            opacity: 0.9;            padding: 8px 15px;
+        }            font-size: 1.2rem;            color: white;
 
-        }            border-radius: 20px;
 
-            font-size: 12px;
 
-        .btn {            cursor: pointer;
+        .todo-item span {            margin-bottom: 2rem;            border: none;
 
-            display: inline-block;            transition: all 0.3s;
+            flex: 1;
 
-            padding: 12px 30px;        }
+        }            opacity: 0.9;            padding: 8px 15px;
 
-            background: #667eea;
 
-            color: white;        .delete-btn:hover {
 
-            text-decoration: none;            background: #c82333;
+        .todo-item button {        }            border-radius: 20px;
 
-            border-radius: 25px;            transform: scale(1.05);
+            background: #dc3545;
 
-            transition: all 0.3s ease;        }
+            color: #fff;            font-size: 12px;
 
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            border: none;
 
-        }        .empty-state {
+            border-radius: 4px;        .btn {            cursor: pointer;
 
-            text-align: center;
+            padding: 0.25rem 0.5rem;
 
-        .btn:hover {            color: #666;
+            cursor: pointer;            display: inline-block;            transition: all 0.3s;
+
+            font-size: 0.8rem;
+
+        }            padding: 12px 30px;        }
+
+
+
+        /* 타이머 스타일 */            background: #667eea;
+
+        .timer-controls {
+
+            display: flex;            color: white;        .delete-btn:hover {
+
+            gap: 0.5rem;
+
+            margin: 1rem 0;            text-decoration: none;            background: #c82333;
+
+            flex-wrap: wrap;
+
+        }            border-radius: 25px;            transform: scale(1.05);
+
+
+
+        .timer-controls button {            transition: all 0.3s ease;        }
+
+            flex: 1;
+
+            min-width: 80px;            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+
+            padding: 0.75rem;
+
+            border: none;        }        .empty-state {
+
+            border-radius: 8px;
+
+            cursor: pointer;            text-align: center;
+
+            font-size: 1rem;
+
+            transition: all 0.2s;        .btn:hover {            color: #666;
+
+        }
 
             transform: translateY(-2px);            font-style: italic;
 
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);            padding: 40px;
+        .timer-controls .start {
 
-        }        }
+            background: #28a745;            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);            padding: 40px;
+
+            color: #fff;
+
+        }        }        }
 
 
 
-        /* 그리드 섹션 */        .reading-status {
+        .timer-controls .pause {
+
+            background: #ffc107;
+
+            color: #000;        /* 그리드 섹션 */        .reading-status {
+
+        }
 
         .grid-section {            display: inline-block;
 
-            margin-bottom: 4rem;            padding: 4px 12px;
+        .timer-controls .reset {
 
-        }            border-radius: 15px;
+            background: #dc3545;            margin-bottom: 4rem;            padding: 4px 12px;
 
-            font-size: 12px;
+            color: #fff;
 
-        .section-title {            font-weight: bold;
+        }        }            border-radius: 15px;
 
-            text-align: center;            text-transform: uppercase;
 
-            font-size: 2.5rem;        }
+
+        .timer-display {            font-size: 12px;
+
+            font-size: 2.5rem;
+
+            font-weight: bold;        .section-title {            font-weight: bold;
+
+            text-align: center;
+
+            color: #2c3e50;            text-align: center;            text-transform: uppercase;
+
+            margin: 1rem 0;
+
+            font-family: 'Courier New', monospace;            font-size: 2.5rem;        }
+
+        }
 
             margin-bottom: 3rem;
 
-            color: white;        .status-reading {
+        .timer-presets {
 
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);            background: #e8f5e8;
+            display: flex;            color: white;        .status-reading {
 
-        }            color: #2e7d32;
+            gap: 0.5rem;
+
+            flex-wrap: wrap;            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);            background: #e8f5e8;
+
+            margin-top: 1rem;
+
+        }        }            color: #2e7d32;
+
+
+
+        .timer-presets button {        }
+
+            background: #6c757d;
+
+            color: #fff;        .grid {
+
+            border: none;
+
+            border-radius: 6px;            display: grid;        .status-completed {
+
+            padding: 0.5rem 1rem;
+
+            cursor: pointer;            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));            background: #e3f2fd;
+
+            font-size: 0.9rem;
+
+        }            gap: 2rem;            color: #1976d2;
+
+
+
+        /* 메모장 스타일 */        }        }
+
+        .notepad textarea {
+
+            width: 100%;
+
+            height: 250px;
+
+            padding: 1rem;        .card {        .status-paused {
+
+            border: 1px solid #ddd;
+
+            border-radius: 8px;            background: rgba(255, 255, 255, 0.95);            background: #fff3e0;
+
+            font-family: inherit;
+
+            font-size: 1rem;            padding: 2rem;            color: #f57c00;
+
+            resize: vertical;
+
+        }            border-radius: 15px;        }
+
+
+
+        .notepad-controls {            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+            display: flex;
+
+            gap: 0.5rem;            transition: transform 0.3s ease, box-shadow 0.3s ease;        /* QR 코드 버튼 스타일 */
+
+            margin-top: 1rem;
+
+            flex-wrap: wrap;            backdrop-filter: blur(10px);        .btn-qr {
 
         }
-
-        .grid {
-
-            display: grid;        .status-completed {
-
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));            background: #e3f2fd;
-
-            gap: 2rem;            color: #1976d2;
-
-        }        }
-
-
-
-        .card {        .status-paused {
-
-            background: rgba(255, 255, 255, 0.95);            background: #fff3e0;
-
-            padding: 2rem;            color: #f57c00;
-
-            border-radius: 15px;        }
-
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-
-            transition: transform 0.3s ease, box-shadow 0.3s ease;        /* QR 코드 버튼 스타일 */
-
-            backdrop-filter: blur(10px);        .btn-qr {
 
         }            background: linear-gradient(135deg, #6B46C1, #8B5CF6);
 
-            color: white;
+        .notepad-controls button {
 
-        .card:hover {            border: none;
+            background: #6c757d;            color: white;
 
-            transform: translateY(-10px);            padding: 8px 16px;
+            color: #fff;
 
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);            border-radius: 6px;
+            border: none;        .card:hover {            border: none;
+
+            border-radius: 6px;
+
+            padding: 0.5rem 1rem;            transform: translateY(-10px);            padding: 8px 16px;
+
+            cursor: pointer;
+
+            font-size: 0.9rem;            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);            border-radius: 6px;
+
+        }
 
         }            cursor: pointer;
 
-            font-size: 14px;
+        /* 모바일 최적화 */
 
-        .card-icon {            font-weight: 500;
+        @media (max-width: 768px) {            font-size: 14px;
+
+            .container {
+
+                padding: 0.5rem;        .card-icon {            font-weight: 500;
+
+            }
 
             font-size: 3rem;            transition: all 0.2s ease;
 
-            margin-bottom: 1rem;            white-space: nowrap;
+            .tools-grid {
 
-        }        }
+                grid-template-columns: 1fr;            margin-bottom: 1rem;            white-space: nowrap;
 
+                gap: 1rem;
 
-
-        .card h3 {        .btn-qr:hover {
-
-            font-size: 1.5rem;            background: linear-gradient(135deg, #553C9A, #7C3AED);
-
-            margin-bottom: 1rem;            transform: translateY(-1px);
-
-            color: #333;            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
-
-        }        }
+            }        }        }
 
 
 
-        .card p {        .btn-qr:active {
+            .tool-card {
+
+                padding: 1rem;
+
+            }        .card h3 {        .btn-qr:hover {
+
+
+
+            .header h1 {            font-size: 1.5rem;            background: linear-gradient(135deg, #553C9A, #7C3AED);
+
+                font-size: 1.3rem;
+
+            }            margin-bottom: 1rem;            transform: translateY(-1px);
+
+
+
+            .calc-btn {            color: #333;            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
+
+                padding: 0.75rem;
+
+                font-size: 1rem;        }        }
+
+            }
+
+
+
+            .timer-display {
+
+                font-size: 2rem;        .card p {        .btn-qr:active {
+
+            }
 
             color: #666;            transform: translateY(0);
 
-            line-height: 1.6;        }
+            .timer-controls {
+
+                justify-content: center;            line-height: 1.6;        }
+
+            }
 
         }    </style>
 
+            .timer-controls button {
+
+                min-width: 70px;</head>
+
+                font-size: 0.9rem;
+
+            }        /* 이미지 갤러리 */
+
+        }        .gallery {
+
+            display: grid;
+
+        @media (max-width: 480px) {            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+            .calc-buttons {            gap: 1rem;
+
+                grid-template-columns: repeat(4, 1fr);            margin-top: 2rem;
+
+            }        }
+
+
+
+            .timer-controls {        .gallery-item {
+
+                flex-direction: column;            background: rgba(255, 255, 255, 0.1);
+
+            }            aspect-ratio: 1;
+
+            border-radius: 10px;
+
+            .timer-controls button {            display: flex;
+
+                min-width: auto;            align-items: center;
+
+            }            justify-content: center;
+
+            font-size: 2rem;
+
+            .todo-input {            color: white;
+
+                flex-direction: column;            transition: all 0.3s ease;
+
+            }            backdrop-filter: blur(10px);
+
+        }            border: 1px solid rgba(255, 255, 255, 0.2);
+
+    </style>        }
+
 </head>
 
-        /* 이미지 갤러리 */
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
-        }
+<body>        .gallery-item:hover {
 
-        .gallery-item {
-            background: rgba(255, 255, 255, 0.1);
-            aspect-ratio: 1;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: white;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+    <div class="header">            background: rgba(255, 255, 255, 0.2);
 
-        .gallery-item:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
+        <h1>📱 모바일 도구모음</h1>            transform: scale(1.05);
+
+        <p>언제 어디서나 사용할 수 있는 실용적인 도구들</p>        }
+
+    </div>
 
         /* 푸터 */
-        .footer {
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            text-align: center;
-            padding: 2rem 0;
-            margin-top: 4rem;
-        }
 
-        /* 반응형 디자인 */
+    <div class="container">        .footer {
 
-        /* 태블릿 (768px 이하) */
-        @media screen and (max-width: 768px) {
-            .nav-menu {
-                position: fixed;
-                top: 70px;
-                left: -100%;
-                width: 100%;
-                height: calc(100vh - 70px);
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(10px);
-                flex-direction: column;
-                justify-content: start;
-                align-items: center;
-                padding-top: 2rem;
-                transition: left 0.3s ease;
+        <div class="tools-grid">            background: rgba(0, 0, 0, 0.8);
+
+            <!-- 계산기 -->            color: white;
+
+            <div class="tool-card">            text-align: center;
+
+                <h3><span class="icon">🧮</span>계산기</h3>            padding: 2rem 0;
+
+                <div class="calculator">            margin-top: 4rem;
+
+                    <div class="calc-display" id="calc-display">0</div>        }
+
+                    <div class="calc-buttons">
+
+                        <button class="calc-btn clear" onclick="clearCalc()">C</button>        /* 반응형 디자인 */
+
+                        <button class="calc-btn" onclick="appendToCalc('/')">/</button>
+
+                        <button class="calc-btn" onclick="appendToCalc('*')">×</button>        /* 태블릿 (768px 이하) */
+
+                        <button class="calc-btn" onclick="deleteLast()">←</button>        @media screen and (max-width: 768px) {
+
+                                    .nav-menu {
+
+                        <button class="calc-btn" onclick="appendToCalc('7')">7</button>                position: fixed;
+
+                        <button class="calc-btn" onclick="appendToCalc('8')">8</button>                top: 70px;
+
+                        <button class="calc-btn" onclick="appendToCalc('9')">9</button>                left: -100%;
+
+                        <button class="calc-btn operator" onclick="appendToCalc('-')">-</button>                width: 100%;
+
+                                        height: calc(100vh - 70px);
+
+                        <button class="calc-btn" onclick="appendToCalc('4')">4</button>                background: rgba(255, 255, 255, 0.95);
+
+                        <button class="calc-btn" onclick="appendToCalc('5')">5</button>                backdrop-filter: blur(10px);
+
+                        <button class="calc-btn" onclick="appendToCalc('6')">6</button>                flex-direction: column;
+
+                        <button class="calc-btn operator" onclick="appendToCalc('+')">+</button>                justify-content: start;
+
+                                        align-items: center;
+
+                        <button class="calc-btn" onclick="appendToCalc('1')">1</button>                padding-top: 2rem;
+
+                        <button class="calc-btn" onclick="appendToCalc('2')">2</button>                transition: left 0.3s ease;
+
+                        <button class="calc-btn" onclick="appendToCalc('3')">3</button>            }
+
+                        <button class="calc-btn equals" onclick="calculate()" rowspan="2">=</button>
+
+                                    .nav-menu.active {
+
+                        <button class="calc-btn" onclick="appendToCalc('0')" colspan="2">0</button>                left: 0;
+
+                        <button class="calc-btn" onclick="appendToCalc('.')">.</button>            }
+
+                    </div>
+
+                </div>            .hamburger {
+
+            </div>                display: flex;
+
             }
 
-            .nav-menu.active {
-                left: 0;
-            }
+            <!-- 투두 리스트 -->
 
-            .hamburger {
-                display: flex;
-            }
+            <div class="tool-card">            .hamburger.active span:nth-child(1) {
 
-            .hamburger.active span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 5px);
-            }
+                <h3><span class="icon">✅</span>할 일 목록</h3>                transform: rotate(45deg) translate(5px, 5px);
 
-            .hamburger.active span:nth-child(2) {
-                opacity: 0;
-            }
+                <div class="todo-input">            }
+
+                    <input type="text" id="todo-input" placeholder="새로운 할 일을 입력하세요..." maxlength="100">
+
+                    <button onclick="addTodo()">추가</button>            .hamburger.active span:nth-child(2) {
+
+                </div>                opacity: 0;
+
+                <div class="todo-list" id="todo-list"></div>            }
+
+            </div>
 
             .hamburger.active span:nth-child(3) {
-                transform: rotate(-45deg) translate(7px, -6px);
-            }
 
-            .hero h1 {
-                font-size: 2rem;
-            }
+            <!-- 타이머 -->                transform: rotate(-45deg) translate(7px, -6px);
 
-            .hero p {
-                font-size: 1rem;
-            }
+            <div class="tool-card">            }
 
-            .section-title {
-                font-size: 2rem;
-            }
+                <h3><span class="icon">⏱️</span>타이머</h3>
 
-            .grid {
-                grid-template-columns: 1fr;
-            }
+                <div class="timer-display" id="timer-display">25:00</div>            .hero h1 {
 
-            .gallery {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+                <div class="timer-controls">                font-size: 2rem;
 
-        /* 모바일 (480px 이하) */
-        @media screen and (max-width: 480px) {
-            .container {
-                padding: 0 15px;
-            }
+                    <button class="start" onclick="startTimer()">시작</button>            }
 
-            .hero {
-                padding: 2rem 0;
-            }
+                    <button class="pause" onclick="pauseTimer()">일시정지</button>
 
-            .hero h1 {
-                font-size: 1.8rem;
-            }
+                    <button class="reset" onclick="resetTimer()">리셋</button>            .hero p {
 
-            .section-title {
-                font-size: 1.5rem;
-            }
+                </div>                font-size: 1rem;
 
-            .card {
-                padding: 1.5rem;
-            }
+                <div class="timer-presets">            }
 
-            .gallery {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-            }
+                    <button onclick="setTimer(25)">25분</button>
 
-            .btn {
-                padding: 10px 25px;
-                font-size: 0.9rem;
-            }
-        }
+                    <button onclick="setTimer(5)">5분</button>            .section-title {
 
-        /* 큰 화면 (1200px 이상) */
-        @media screen and (min-width: 1200px) {
-            .hero h1 {
-                font-size: 4rem;
-            }
+                    <button onclick="setTimer(15)">15분</button>                font-size: 2rem;
 
-            .grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+                    <button onclick="setTimer(30)">30분</button>            }
 
-            .gallery {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        /* 다크모드 지원 */
-        @media (prefers-color-scheme: dark) {
-            .card {
-                background: rgba(50, 50, 50, 0.95);
-                color: white;
-            }
-
-            .card h3 {
-                color: white;
-            }
-
-            .card p {
-                color: #ccc;
-            }
-        }
-
-        /* 애니메이션 */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        /* 인쇄 스타일 */
-        @media print {
-            .header, .footer, .hamburger {
-                display: none;
-            }
-            
-            body {
-                background: white;
-                color: black;
-            }
-
-            .card {
-                background: white;
-                box-shadow: none;
-                border: 1px solid #ccc;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- 헤더 -->
-    <header class="header">
-        <nav class="container">
-            <div class="nav">
-                <div class="logo">🌐 ResponsiveWeb</div>
-                <ul class="nav-menu" id="nav-menu">
-                    <li><a href="#home" class="nav-link">홈</a></li>
-                    <li><a href="#about" class="nav-link">소개</a></li>
-                    <li><a href="#services" class="nav-link">서비스</a></li>
-                    <li><a href="#gallery" class="nav-link">갤러리</a></li>
-                    <li><a href="#contact" class="nav-link">연락처</a></li>
-                </ul>
-                <div class="hamburger" id="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
                 </div>
+
+            </div>            .grid {
+
+                grid-template-columns: 1fr;
+
+            <!-- 메모장 -->            }
+
+            <div class="tool-card">
+
+                <h3><span class="icon">📝</span>메모장</h3>            .gallery {
+
+                <div class="notepad">                grid-template-columns: repeat(2, 1fr);
+
+                    <textarea id="notepad" placeholder="여기에 메모를 작성하세요..."></textarea>            }
+
+                    <div class="notepad-controls">        }
+
+                        <button onclick="saveNote()">저장</button>
+
+                        <button onclick="loadNote()">불러오기</button>        /* 모바일 (480px 이하) */
+
+                        <button onclick="clearNote()">지우기</button>        @media screen and (max-width: 480px) {
+
+                        <button onclick="downloadNote()">다운로드</button>            .container {
+
+                    </div>                padding: 0 15px;
+
+                </div>            }
+
             </div>
-        </nav>
-    </header>
+
+        </div>            .hero {
+
+    </div>                padding: 2rem 0;
+
+            }
+
+    <script>
+
+        // 계산기 기능            .hero h1 {
+
+        let calcDisplay = document.getElementById('calc-display');                font-size: 1.8rem;
+
+        let calcInput = '';            }
+
+        let shouldResetDisplay = false;
+
+            .section-title {
+
+        function appendToCalc(value) {                font-size: 1.5rem;
+
+            if (shouldResetDisplay) {            }
+
+                calcInput = '';
+
+                shouldResetDisplay = false;            .card {
+
+            }                padding: 1.5rem;
+
+                        }
+
+            calcInput += value;
+
+            calcDisplay.textContent = calcInput || '0';            .gallery {
+
+        }                grid-template-columns: 1fr;
+
+                gap: 0.5rem;
+
+        function clearCalc() {            }
+
+            calcInput = '';
+
+            calcDisplay.textContent = '0';            .btn {
+
+        }                padding: 10px 25px;
+
+                font-size: 0.9rem;
+
+        function deleteLast() {            }
+
+            calcInput = calcInput.slice(0, -1);        }
+
+            calcDisplay.textContent = calcInput || '0';
+
+        }        /* 큰 화면 (1200px 이상) */
+
+        @media screen and (min-width: 1200px) {
+
+        function calculate() {            .hero h1 {
+
+            try {                font-size: 4rem;
+
+                const result = eval(calcInput.replace('×', '*'));            }
+
+                calcDisplay.textContent = result;
+
+                calcInput = result.toString();            .grid {
+
+                shouldResetDisplay = true;                grid-template-columns: repeat(3, 1fr);
+
+            } catch (error) {            }
+
+                calcDisplay.textContent = '오류';
+
+                calcInput = '';            .gallery {
+
+            }                grid-template-columns: repeat(4, 1fr);
+
+        }            }
+
+        }
+
+        // 투두 리스트 기능
+
+        let todos = JSON.parse(localStorage.getItem('todos') || '[]');        /* 다크모드 지원 */
+
+        @media (prefers-color-scheme: dark) {
+
+        function renderTodos() {            .card {
+
+            const todoList = document.getElementById('todo-list');                background: rgba(50, 50, 50, 0.95);
+
+            todoList.innerHTML = '';                color: white;
+
+                        }
+
+            todos.forEach((todo, index) => {
+
+                const todoItem = document.createElement('div');            .card h3 {
+
+                todoItem.className = `todo-item ${todo.completed ? 'completed' : ''}`;                color: white;
+
+                todoItem.innerHTML = `            }
+
+                    <input type="checkbox" ${todo.completed ? 'checked' : ''} 
+
+                           onchange="toggleTodo(${index})">            .card p {
+
+                    <span>${todo.text}</span>                color: #ccc;
+
+                    <button onclick="deleteTodo(${index})">삭제</button>            }
+
+                `;        }
+
+                todoList.appendChild(todoItem);
+
+            });        /* 애니메이션 */
+
+        }        @keyframes fadeInUp {
+
+            from {
+
+        function addTodo() {                opacity: 0;
+
+            const input = document.getElementById('todo-input');                transform: translateY(30px);
+
+            const text = input.value.trim();            }
+
+                        to {
+
+            if (text) {                opacity: 1;
+
+                todos.push({ text, completed: false });                transform: translateY(0);
+
+                input.value = '';            }
+
+                saveTodos();        }
+
+                renderTodos();
+
+            }        .fade-in {
+
+        }            animation: fadeInUp 0.6s ease forwards;
+
+        }
+
+        function toggleTodo(index) {
+
+            todos[index].completed = !todos[index].completed;        /* 인쇄 스타일 */
+
+            saveTodos();        @media print {
+
+            renderTodos();            .header, .footer, .hamburger {
+
+        }                display: none;
+
+            }
+
+        function deleteTodo(index) {            
+
+            todos.splice(index, 1);            body {
+
+            saveTodos();                background: white;
+
+            renderTodos();                color: black;
+
+        }            }
+
+
+
+        function saveTodos() {            .card {
+
+            localStorage.setItem('todos', JSON.stringify(todos));                background: white;
+
+        }                box-shadow: none;
+
+                border: 1px solid #ccc;
+
+        // 타이머 기능            }
+
+        let timerInterval;        }
+
+        let timeLeft = 25 * 60; // 25분    </style>
+
+        let isRunning = false;</head>
+
+<body>
+
+        function updateTimerDisplay() {    <!-- 헤더 -->
+
+            const minutes = Math.floor(timeLeft / 60);    <header class="header">
+
+            const seconds = timeLeft % 60;        <nav class="container">
+
+            document.getElementById('timer-display').textContent =             <div class="nav">
+
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;                <div class="logo">🌐 ResponsiveWeb</div>
+
+        }                <ul class="nav-menu" id="nav-menu">
+
+                    <li><a href="#home" class="nav-link">홈</a></li>
+
+        function startTimer() {                    <li><a href="#about" class="nav-link">소개</a></li>
+
+            if (!isRunning) {                    <li><a href="#services" class="nav-link">서비스</a></li>
+
+                isRunning = true;                    <li><a href="#gallery" class="nav-link">갤러리</a></li>
+
+                timerInterval = setInterval(() => {                    <li><a href="#contact" class="nav-link">연락처</a></li>
+
+                    if (timeLeft > 0) {                </ul>
+
+                        timeLeft--;                <div class="hamburger" id="hamburger">
+
+                        updateTimerDisplay();                    <span></span>
+
+                    } else {                    <span></span>
+
+                        resetTimer();                    <span></span>
+
+                        alert('⏰ 시간이 종료되었습니다!');                </div>
+
+                    }            </div>
+
+                }, 1000);        </nav>
+
+            }    </header>
+
+        }
 
     <!-- 메인 콘텐츠 -->
-    <main class="main">
-        <div class="container">
-            <!-- 히어로 섹션 -->
-            <section class="hero" id="home">
+
+        function pauseTimer() {    <main class="main">
+
+            isRunning = false;        <div class="container">
+
+            clearInterval(timerInterval);            <!-- 히어로 섹션 -->
+
+        }            <section class="hero" id="home">
+
                 <h1 class="fade-in">반응형 웹 디자인</h1>
-                <p class="fade-in">모든 기기에서 완벽하게 작동하는 웹사이트</p>
-                <a href="#services" class="btn fade-in">서비스 보기</a>
-            </section>
 
-            <!-- 서비스 섹션 -->
-            <section class="grid-section" id="services">
+        function resetTimer() {                <p class="fade-in">모든 기기에서 완벽하게 작동하는 웹사이트</p>
+
+            isRunning = false;                <a href="#services" class="btn fade-in">서비스 보기</a>
+
+            clearInterval(timerInterval);            </section>
+
+            timeLeft = 25 * 60;
+
+            updateTimerDisplay();            <!-- 서비스 섹션 -->
+
+        }            <section class="grid-section" id="services">
+
                 <h2 class="section-title">핵심 기능</h2>
-                <div class="grid">
-                    <div class="card fade-in">
-                        <div class="card-icon">📱</div>
-                        <h3>모바일 최적화</h3>
-                        <p>스마트폰에서 완벽하게 동작하는 터치 친화적 인터페이스를 제공합니다.</p>
+
+        function setTimer(minutes) {                <div class="grid">
+
+            resetTimer();                    <div class="card fade-in">
+
+            timeLeft = minutes * 60;                        <div class="card-icon">📱</div>
+
+            updateTimerDisplay();                        <h3>모바일 최적화</h3>
+
+        }                        <p>스마트폰에서 완벽하게 동작하는 터치 친화적 인터페이스를 제공합니다.</p>
+
                     </div>
-                    <div class="card fade-in">
-                        <div class="card-icon">💻</div>
-                        <h3>데스크톱 지원</h3>
-                        <p>큰 화면에서 최적화된 레이아웃과 향상된 사용자 경험을 제공합니다.</p>
-                    </div>
-                    <div class="card fade-in">
+
+        // 메모장 기능                    <div class="card fade-in">
+
+        function saveNote() {                        <div class="card-icon">💻</div>
+
+            const notepad = document.getElementById('notepad');                        <h3>데스크톱 지원</h3>
+
+            localStorage.setItem('note', notepad.value);                        <p>큰 화면에서 최적화된 레이아웃과 향상된 사용자 경험을 제공합니다.</p>
+
+            alert('📝 메모가 저장되었습니다!');                    </div>
+
+        }                    <div class="card fade-in">
+
                         <div class="card-icon">📊</div>
-                        <h3>플렉시블 그리드</h3>
-                        <p>콘텐츠가 화면 크기에 맞게 자동으로 조정되는 유연한 레이아웃입니다.</p>
-                    </div>
-                    <div class="card fade-in">
-                        <div class="card-icon">🎨</div>
-                        <h3>모던 디자인</h3>
-                        <p>최신 디자인 트렌드를 반영한 아름답고 직관적인 사용자 인터페이스입니다.</p>
-                    </div>
-                    <div class="card fade-in">
-                        <div class="card-icon">⚡</div>
-                        <h3>빠른 로딩</h3>
-                        <p>최적화된 코드와 리소스로 모든 기기에서 빠른 로딩 속도를 보장합니다.</p>
-                    </div>
-                    <div class="card fade-in">
-                        <div class="card-icon">🔧</div>
-                        <h3>쉬운 관리</h3>
-                        <p>깔끔한 코드 구조로 유지보수가 쉽고 확장 가능한 웹사이트입니다.</p>
-                    </div>
-                </div>
-            </section>
 
-            <!-- 갤러리 섹션 -->
-            <section class="grid-section" id="gallery">
-                <h2 class="section-title">반응형 갤러리</h2>
-                <div class="gallery">
-                    <div class="gallery-item fade-in">🖼️</div>
-                    <div class="gallery-item fade-in">🎭</div>
-                    <div class="gallery-item fade-in">🌅</div>
-                    <div class="gallery-item fade-in">🎨</div>
-                    <div class="gallery-item fade-in">📸</div>
-                    <div class="gallery-item fade-in">🖌️</div>
-                    <div class="gallery-item fade-in">🎪</div>
+        function loadNote() {                        <h3>플렉시블 그리드</h3>
+
+            const notepad = document.getElementById('notepad');                        <p>콘텐츠가 화면 크기에 맞게 자동으로 조정되는 유연한 레이아웃입니다.</p>
+
+            const savedNote = localStorage.getItem('note');                    </div>
+
+            if (savedNote) {                    <div class="card fade-in">
+
+                notepad.value = savedNote;                        <div class="card-icon">🎨</div>
+
+            }                        <h3>모던 디자인</h3>
+
+        }                        <p>최신 디자인 트렌드를 반영한 아름답고 직관적인 사용자 인터페이스입니다.</p>
+
+                    </div>
+
+        function clearNote() {                    <div class="card fade-in">
+
+            if (confirm('정말로 메모를 지우시겠습니까?')) {                        <div class="card-icon">⚡</div>
+
+                document.getElementById('notepad').value = '';                        <h3>빠른 로딩</h3>
+
+            }                        <p>최적화된 코드와 리소스로 모든 기기에서 빠른 로딩 속도를 보장합니다.</p>
+
+        }                    </div>
+
+                    <div class="card fade-in">
+
+        function downloadNote() {                        <div class="card-icon">🔧</div>
+
+            const notepad = document.getElementById('notepad');                        <h3>쉬운 관리</h3>
+
+            const text = notepad.value;                        <p>깔끔한 코드 구조로 유지보수가 쉽고 확장 가능한 웹사이트입니다.</p>
+
+                                </div>
+
+            if (text.trim()) {                </div>
+
+                const blob = new Blob([text], { type: 'text/plain' });            </section>
+
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');            <!-- 갤러리 섹션 -->
+
+                a.href = url;            <section class="grid-section" id="gallery">
+
+                a.download = `메모_${new Date().toLocaleDateString()}.txt`;                <h2 class="section-title">반응형 갤러리</h2>
+
+                document.body.appendChild(a);                <div class="gallery">
+
+                a.click();                    <div class="gallery-item fade-in">🖼️</div>
+
+                document.body.removeChild(a);                    <div class="gallery-item fade-in">🎭</div>
+
+                URL.revokeObjectURL(url);                    <div class="gallery-item fade-in">🌅</div>
+
+            } else {                    <div class="gallery-item fade-in">🎨</div>
+
+                alert('저장할 내용이 없습니다.');                    <div class="gallery-item fade-in">📸</div>
+
+            }                    <div class="gallery-item fade-in">🖌️</div>
+
+        }                    <div class="gallery-item fade-in">🎪</div>
+
                     <div class="gallery-item fade-in">🌈</div>
-                </div>
-            </section>
 
-            <!-- 소개 섹션 -->
-            <section class="grid-section" id="about">
-                <h2 class="section-title">브라우저 크기를 조정해보세요!</h2>
+        // 엔터 키 이벤트                </div>
+
+        document.getElementById('todo-input').addEventListener('keypress', function(e) {            </section>
+
+            if (e.key === 'Enter') {
+
+                addTodo();            <!-- 소개 섹션 -->
+
+            }            <section class="grid-section" id="about">
+
+        });                <h2 class="section-title">브라우저 크기를 조정해보세요!</h2>
+
                 <div class="card fade-in" style="text-align: center;">
-                    <div class="card-icon">🔄</div>
-                    <h3>실시간 반응형 테스트</h3>
-                    <p>브라우저 창의 크기를 조정하거나 개발자 도구에서 다양한 기기 크기를 시뮬레이션해보세요. 
-                    레이아웃이 자동으로 조정되는 것을 확인할 수 있습니다.</p>
-                    <br>
-                    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-                        <button class="btn" onclick="showScreenSize()">현재 화면 크기 확인</button>
+
+        // 초기화                    <div class="card-icon">🔄</div>
+
+        renderTodos();                    <h3>실시간 반응형 테스트</h3>
+
+        updateTimerDisplay();                    <p>브라우저 창의 크기를 조정하거나 개발자 도구에서 다양한 기기 크기를 시뮬레이션해보세요. 
+
+        loadNote();                    레이아웃이 자동으로 조정되는 것을 확인할 수 있습니다.</p>
+
+    </script>                    <br>
+
+</body>                    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+
+</html>                        <button class="btn" onclick="showScreenSize()">현재 화면 크기 확인</button>
                     </div>
                     <div id="screen-info" style="margin-top: 1rem; padding: 1rem; background: rgba(102, 126, 234, 0.1); border-radius: 10px; display: none;">
                         <strong>화면 정보:</strong><br>
