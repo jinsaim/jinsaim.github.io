@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+
+<html lang="ko">        .reading-item:hover {
+
+<head>            transform: translateY(-2px);
+
+    <meta charset="UTF-8">        }
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>🌐 반응형 웹 디자인 연습</title>        .book-header {
+
+    <style>            display: flex;
+
+        /* 기본 리셋 */            justify-content: space-between;
+
+        * {            align-items: flex-start;
+
+            margin: 0;            margin-bottom: 15px;
+
+            padding: 0;        }
+
+            box-sizing: border-box;
+
+        }        .book-info {
+
+            flex: 1;
+
+        body {        }
+
+            font-family: 'Arial', sans-serif;
+
+            line-height: 1.6;        .book-title {
+
+            color: #333;            font-size: 20px;
+
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);            font-weight: bold;
+
+            min-height: 100vh;            color: #333;
+
+        }            margin-bottom: 5px;
+
+        }
+
+        /* 컨테이너 */
+
+        .container {        .book-author {
+
+            max-width: 1200px;            color: #666;
+
+            margin: 0 auto;            font-size: 16px;
+
+            padding: 0 20px;            margin-bottom: 5px;
+
+        }        }
+
+
+
+        /* 헤더 */        .book-meta {
+
+        .header {            display: flex;
+
+            background: rgba(255, 255, 255, 0.95);            gap: 15px;
+
+            backdrop-filter: blur(10px);            font-size: 14px;
+
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);            color: #999;
+
+            position: sticky;            flex-wrap: wrap;
+
+            top: 0;        }
+
+            z-index: 1000;
+
+        }        .rating-display {
+
+            font-size: 18px;
+
+        .nav {            color: #FFD700;
+
+            display: flex;        }
+
+            justify-content: space-between;
+
+            align-items: center;        .genre-tag {
+
+            padding: 1rem 0;            background: #e3f2fd;
+
+        }            color: #1976d2;
+
+            padding: 4px 12px;
+
+        .logo {            border-radius: 15px;
+
+            font-size: 1.5rem;            font-size: 12px;
+
+            font-weight: bold;            font-weight: bold;
+
+            color: #667eea;        }
+
+        }
+
+        .progress-bar {
+
+        .nav-menu {            background: #f0f0f0;
+
+            display: flex;            border-radius: 10px;
+
+            list-style: none;            overflow: hidden;
+
+            gap: 2rem;            height: 8px;
+
+        }            margin: 10px 0;
+
+        }
+
+        .nav-link {
+
+            text-decoration: none;        .progress-fill {
+
+            color: #333;            background: linear-gradient(45deg, #2196F3, #21CBF3);
+
+            font-weight: 500;            height: 100%;
+
+            transition: color 0.3s ease;            transition: width 0.3s;
+
+        }        }
+
+
+
+        .nav-link:hover {        .quote-section {
+
+            color: #667eea;            background: #f8f9fa;
+
+        }            padding: 15px;
+
+            border-left: 4px solid #2196F3;
+
+        /* 모바일 메뉴 토글 */            border-radius: 5px;
+
+        .hamburger {            margin: 15px 0;
+
+            display: none;            font-style: italic;
+
+            flex-direction: column;        }
+
+            cursor: pointer;
+
+            gap: 4px;        .quote-text {
+
+        }            font-size: 16px;
+
+            line-height: 1.6;
+
+        .hamburger span {            margin-bottom: 8px;
+
+            width: 25px;        }
+
+            height: 3px;
+
+            background: #333;        .quote-page {
+
+            transition: 0.3s;            font-size: 12px;
+
+        }            color: #666;
+
+            text-align: right;
+
+        /* 메인 콘텐츠 */        }
+
+        .main {
+
+            padding: 4rem 0;        .thoughts {
+
+        }            margin-top: 15px;
+
+            padding: 15px;
+
+        .hero {            background: #fff8e1;
+
+            text-align: center;            border-radius: 8px;
+
+            margin-bottom: 4rem;            border-left: 4px solid #ffa726;
+
+            color: white;        }
+
+        }
+
+        .thoughts-title {
+
+        .hero h1 {            font-weight: bold;
+
+            font-size: 3rem;            color: #333;
+
+            margin-bottom: 1rem;            margin-bottom: 8px;
+
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);        }
+
+        }
+
+        .delete-btn {
+
+        .hero p {            background: #dc3545;
+
+            font-size: 1.2rem;            color: white;
+
+            margin-bottom: 2rem;            border: none;
+
+            opacity: 0.9;            padding: 8px 15px;
+
+        }            border-radius: 20px;
+
+            font-size: 12px;
+
+        .btn {            cursor: pointer;
+
+            display: inline-block;            transition: all 0.3s;
+
+            padding: 12px 30px;        }
+
+            background: #667eea;
+
+            color: white;        .delete-btn:hover {
+
+            text-decoration: none;            background: #c82333;
+
+            border-radius: 25px;            transform: scale(1.05);
+
+            transition: all 0.3s ease;        }
+
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+
+        }        .empty-state {
+
+            text-align: center;
+
+        .btn:hover {            color: #666;
+
+            transform: translateY(-2px);            font-style: italic;
+
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);            padding: 40px;
+
+        }        }
+
+
+
+        /* 그리드 섹션 */        .reading-status {
+
+        .grid-section {            display: inline-block;
+
+            margin-bottom: 4rem;            padding: 4px 12px;
+
+        }            border-radius: 15px;
+
+            font-size: 12px;
+
+        .section-title {            font-weight: bold;
+
+            text-align: center;            text-transform: uppercase;
+
+            font-size: 2.5rem;        }
+
+            margin-bottom: 3rem;
+
+            color: white;        .status-reading {
+
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);            background: #e8f5e8;
+
+        }            color: #2e7d32;
+
+        }
+
+        .grid {
+
+            display: grid;        .status-completed {
+
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));            background: #e3f2fd;
+
+            gap: 2rem;            color: #1976d2;
+
+        }        }
+
+
+
+        .card {        .status-paused {
+
+            background: rgba(255, 255, 255, 0.95);            background: #fff3e0;
+
+            padding: 2rem;            color: #f57c00;
+
+            border-radius: 15px;        }
+
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+            transition: transform 0.3s ease, box-shadow 0.3s ease;        /* QR 코드 버튼 스타일 */
+
+            backdrop-filter: blur(10px);        .btn-qr {
+
+        }            background: linear-gradient(135deg, #6B46C1, #8B5CF6);
+
+            color: white;
+
+        .card:hover {            border: none;
+
+            transform: translateY(-10px);            padding: 8px 16px;
+
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);            border-radius: 6px;
+
+        }            cursor: pointer;
+
+            font-size: 14px;
+
+        .card-icon {            font-weight: 500;
+
+            font-size: 3rem;            transition: all 0.2s ease;
+
+            margin-bottom: 1rem;            white-space: nowrap;
+
+        }        }
+
+
+
+        .card h3 {        .btn-qr:hover {
+
+            font-size: 1.5rem;            background: linear-gradient(135deg, #553C9A, #7C3AED);
+
+            margin-bottom: 1rem;            transform: translateY(-1px);
+
+            color: #333;            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
+
+        }        }
+
+
+
+        .card p {        .btn-qr:active {
+
+            color: #666;            transform: translateY(0);
+
+            line-height: 1.6;        }
+
+        }    </style>
+
+</head>
+
+        /* 이미지 갤러리 */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .gallery-item {
+            background: rgba(255, 255, 255, 0.1);
+            aspect-ratio: 1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .gallery-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* 푸터 */
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        /* 반응형 디자인 */
+
+        /* 태블릿 (768px 이하) */
+        @media screen and (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                justify-content: start;
+                align-items: center;
+                padding-top: 2rem;
+                transition: left 0.3s ease;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hamburger.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -6px);
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* 모바일 (480px 이하) */
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .hero {
+                padding: 2rem 0;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .gallery {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .btn {
+                padding: 10px 25px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* 큰 화면 (1200px 이상) */
+        @media screen and (min-width: 1200px) {
+            .hero h1 {
+                font-size: 4rem;
+            }
+
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .gallery {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* 다크모드 지원 */
+        @media (prefers-color-scheme: dark) {
+            .card {
+                background: rgba(50, 50, 50, 0.95);
+                color: white;
+            }
+
+            .card h3 {
+                color: white;
+            }
+
+            .card p {
+                color: #ccc;
+            }
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* 인쇄 스타일 */
+        @media print {
+            .header, .footer, .hamburger {
+                display: none;
+            }
+            
+            body {
+                background: white;
+                color: black;
+            }
+
+            .card {
+                background: white;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <nav class="container">
+            <div class="nav">
+                <div class="logo">🌐 ResponsiveWeb</div>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="#home" class="nav-link">홈</a></li>
+                    <li><a href="#about" class="nav-link">소개</a></li>
+                    <li><a href="#services" class="nav-link">서비스</a></li>
+                    <li><a href="#gallery" class="nav-link">갤러리</a></li>
+                    <li><a href="#contact" class="nav-link">연락처</a></li>
+                </ul>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main">
+        <div class="container">
+            <!-- 히어로 섹션 -->
+            <section class="hero" id="home">
+                <h1 class="fade-in">반응형 웹 디자인</h1>
+                <p class="fade-in">모든 기기에서 완벽하게 작동하는 웹사이트</p>
+                <a href="#services" class="btn fade-in">서비스 보기</a>
+            </section>
+
+            <!-- 서비스 섹션 -->
+            <section class="grid-section" id="services">
+                <h2 class="section-title">핵심 기능</h2>
+                <div class="grid">
+                    <div class="card fade-in">
+                        <div class="card-icon">📱</div>
+                        <h3>모바일 최적화</h3>
+                        <p>스마트폰에서 완벽하게 동작하는 터치 친화적 인터페이스를 제공합니다.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <div class="card-icon">💻</div>
+                        <h3>데스크톱 지원</h3>
+                        <p>큰 화면에서 최적화된 레이아웃과 향상된 사용자 경험을 제공합니다.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <div class="card-icon">📊</div>
+                        <h3>플렉시블 그리드</h3>
+                        <p>콘텐츠가 화면 크기에 맞게 자동으로 조정되는 유연한 레이아웃입니다.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <div class="card-icon">🎨</div>
+                        <h3>모던 디자인</h3>
+                        <p>최신 디자인 트렌드를 반영한 아름답고 직관적인 사용자 인터페이스입니다.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <div class="card-icon">⚡</div>
+                        <h3>빠른 로딩</h3>
+                        <p>최적화된 코드와 리소스로 모든 기기에서 빠른 로딩 속도를 보장합니다.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <div class="card-icon">🔧</div>
+                        <h3>쉬운 관리</h3>
+                        <p>깔끔한 코드 구조로 유지보수가 쉽고 확장 가능한 웹사이트입니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 갤러리 섹션 -->
+            <section class="grid-section" id="gallery">
+                <h2 class="section-title">반응형 갤러리</h2>
+                <div class="gallery">
+                    <div class="gallery-item fade-in">🖼️</div>
+                    <div class="gallery-item fade-in">🎭</div>
+                    <div class="gallery-item fade-in">🌅</div>
+                    <div class="gallery-item fade-in">🎨</div>
+                    <div class="gallery-item fade-in">📸</div>
+                    <div class="gallery-item fade-in">🖌️</div>
+                    <div class="gallery-item fade-in">🎪</div>
+                    <div class="gallery-item fade-in">🌈</div>
+                </div>
+            </section>
+
+            <!-- 소개 섹션 -->
+            <section class="grid-section" id="about">
+                <h2 class="section-title">브라우저 크기를 조정해보세요!</h2>
+                <div class="card fade-in" style="text-align: center;">
+                    <div class="card-icon">🔄</div>
+                    <h3>실시간 반응형 테스트</h3>
+                    <p>브라우저 창의 크기를 조정하거나 개발자 도구에서 다양한 기기 크기를 시뮬레이션해보세요. 
+                    레이아웃이 자동으로 조정되는 것을 확인할 수 있습니다.</p>
+                    <br>
+                    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn" onclick="showScreenSize()">현재 화면 크기 확인</button>
+                    </div>
+                    <div id="screen-info" style="margin-top: 1rem; padding: 1rem; background: rgba(102, 126, 234, 0.1); border-radius: 10px; display: none;">
+                        <strong>화면 정보:</strong><br>
+                        <span id="screen-details"></span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <p>&copy; 2025 반응형 웹 디자인 연습. 모든 기기에서 완벽하게 작동합니다! 🚀</p>
+        </div>
+    </footer>
+
+    <script>
+        // 햄버거 메뉴 토글
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('nav-menu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // 네비게이션 링크 클릭 시 메뉴 닫기
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // 스크롤 시 페이드인 애니메이션
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        // 모든 카드와 갤러리 아이템 관찰
+        document.querySelectorAll('.card, .gallery-item').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 화면 크기 정보 표시
+        function showScreenSize() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const screenInfo = document.getElementById('screen-info');
+            const screenDetails = document.getElementById('screen-details');
+            
+            let deviceType = '';
+            if (width <= 480) deviceType = '📱 모바일';
+            else if (width <= 768) deviceType = '📱 큰 모바일 / 작은 태블릿';
+            else if (width <= 1200) deviceType = '💻 태블릿 / 작은 데스크톱';
+            else deviceType = '🖥️ 데스크톱';
+
+            screenDetails.innerHTML = `
+                <strong>너비:</strong> ${width}px<br>
+                <strong>높이:</strong> ${height}px<br>
+                <strong>기기 타입:</strong> ${deviceType}<br>
+                <strong>픽셀 비율:</strong> ${window.devicePixelRatio}x
+            `;
+            
+            screenInfo.style.display = 'block';
+        }
+
+        // 윈도우 리사이즈 이벤트
+        window.addEventListener('resize', () => {
+            if (document.getElementById('screen-info').style.display === 'block') {
+                showScreenSize();
+            }
+        });
+
+        // 부드러운 스크롤
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 페이지 로드 시 초기 애니메이션
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.fade-in').forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.animation = `fadeInUp 0.6s ease ${index * 0.1}s forwards`;
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
