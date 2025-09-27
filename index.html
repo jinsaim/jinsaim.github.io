@@ -1,144 +1,284 @@
-<!DOCTYPE html><!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html><!DOCTYPE html>
 
-<html lang="ko"><html lang="ko">
+<html lang="ko">
 
-<head><head>
+<head><html lang="ko"><html lang="ko">
 
-    <meta charset="UTF-8">    <meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><head><head>
 
-    <title>📱 모바일 도구모음</title>    <title>📱 모바일 도구모음</title>
+    <title>반응형 웹 연습</title>
+
+    <style>    <meta charset="UTF-8">    <meta charset="UTF-8">
+
+        * {
+
+            margin: 0;    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+            padding: 0;
+
+            box-sizing: border-box;    <title>📱 모바일 도구모음</title>    <title>📱 모바일 도구모음</title>
+
+        }
 
     <style>    <style>
 
-        * {        * {
+        body {
 
-            margin: 0;            margin: 0;
+            font-family: Arial, sans-serif;        * {        * {
+
+            line-height: 1.6;
+
+            color: #333;            margin: 0;            margin: 0;
+
+        }
 
             padding: 0;            padding: 0;
 
-            box-sizing: border-box;            box-sizing: border-box;
+        .container {
 
-        }        }
+            max-width: 1200px;            box-sizing: border-box;            box-sizing: border-box;
 
+            margin: 0 auto;
 
+            padding: 20px;        }        }
 
-        body {        body {
-
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
-            background: #f5f7fa;            background: #f5f7fa;
-
-            color: #333;            color: #333;
-
-        }        }
+        }
 
 
 
-        .header {        /* 컨테이너 */
+        .header {
+
+            background: #007bff;        body {        body {
+
+            color: white;
+
+            text-align: center;            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+            padding: 2rem 0;
+
+        }            background: #f5f7fa;            background: #f5f7fa;
+
+
+
+        .header h1 {            color: #333;            color: #333;
+
+            font-size: 2rem;
+
+            margin-bottom: 0.5rem;        }        }
+
+        }
+
+
+
+        .content {
+
+            display: grid;        .header {        /* 컨테이너 */
+
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+            gap: 2rem;            background: #fff;
+
+            margin: 2rem 0;
+
+        }            box-shadow: 0 2px 10px rgba(0,0,0,0.1);        .container {        .book-author {
+
+
+
+        .card {            padding: 1rem;
 
             background: #fff;
 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);        .container {        .book-author {
+            padding: 1.5rem;            text-align: center;            max-width: 1200px;            color: #666;
 
-            padding: 1rem;
+            border-radius: 8px;
 
-            text-align: center;            max-width: 1200px;            color: #666;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);            position: sticky;
 
-            position: sticky;
+        }
 
             top: 0;            margin: 0 auto;            font-size: 16px;
 
-            z-index: 100;
+        .card h2 {
 
-        }            padding: 0 20px;            margin-bottom: 5px;
+            color: #007bff;            z-index: 100;
+
+            margin-bottom: 1rem;
+
+        }        }            padding: 0 20px;            margin-bottom: 5px;
 
 
 
-        .header h1 {        }        }
+        .card p {
 
-            font-size: 1.5rem;
+            margin-bottom: 1rem;
 
-            color: #2c3e50;
+        }        .header h1 {        }        }
+
+
+
+        .footer {            font-size: 1.5rem;
+
+            background: #333;
+
+            color: white;            color: #2c3e50;
+
+            text-align: center;
+
+            padding: 1rem 0;        }
 
         }
 
         /* 헤더 */        .book-meta {
 
-        .container {
+        /* 태블릿 */
 
-            max-width: 1200px;        .header {            display: flex;
+        @media (max-width: 768px) {        .container {
 
-            margin: 0 auto;
+            .header h1 {
 
-            padding: 1rem;            background: rgba(255, 255, 255, 0.95);            gap: 15px;
+                font-size: 1.5rem;            max-width: 1200px;        .header {            display: flex;
+
+            }
+
+                        margin: 0 auto;
+
+            .container {
+
+                padding: 15px;            padding: 1rem;            background: rgba(255, 255, 255, 0.95);            gap: 15px;
+
+            }
+
+                    }
+
+            .content {
+
+                gap: 1rem;            backdrop-filter: blur(10px);            font-size: 14px;
+
+            }
+
+        }        .tools-grid {
+
+
+
+        /* 모바일 */            display: grid;            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);            color: #999;
+
+        @media (max-width: 480px) {
+
+            .header {            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+                padding: 1rem 0;
+
+            }            gap: 1.5rem;            position: sticky;            flex-wrap: wrap;
+
+            
+
+            .header h1 {            margin-top: 1rem;
+
+                font-size: 1.2rem;
+
+            }        }            top: 0;        }
+
+            
+
+            .card {
+
+                padding: 1rem;
+
+            }        .tool-card {            z-index: 1000;
+
+            
+
+            .container {            background: #fff;
+
+                padding: 10px;
+
+            }            border-radius: 12px;        }        .rating-display {
 
         }
 
-            backdrop-filter: blur(10px);            font-size: 14px;
+    </style>            padding: 1.5rem;
 
-        .tools-grid {
+</head>
 
-            display: grid;            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);            color: #999;
+<body>            box-shadow: 0 4px 15px rgba(0,0,0,0.08);            font-size: 18px;
 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    <div class="header">
 
-            gap: 1.5rem;            position: sticky;            flex-wrap: wrap;
+        <h1>🌐 간단한 반응형 웹사이트</h1>            transition: transform 0.2s;
 
-            margin-top: 1rem;
+        <p>모바일, 태블릿, 데스크톱에서 모두 잘 보입니다</p>
 
-        }            top: 0;        }
-
-
-
-        .tool-card {            z-index: 1000;
-
-            background: #fff;
-
-            border-radius: 12px;        }        .rating-display {
-
-            padding: 1.5rem;
-
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);            font-size: 18px;
-
-            transition: transform 0.2s;
-
-        }        .nav {            color: #FFD700;
+    </div>        }        .nav {            color: #FFD700;
 
 
 
-        .tool-card:hover {            display: flex;        }
+    <div class="container">
 
-            transform: translateY(-2px);
+        <div class="content">
 
-        }            justify-content: space-between;
+            <div class="card">        .tool-card:hover {            display: flex;        }
 
+                <h2>📱 모바일 우선</h2>
 
+                <p>모바일에서 먼저 잘 작동하도록 설계했습니다.</p>            transform: translateY(-2px);
 
-        .tool-card h3 {            align-items: center;        .genre-tag {
+                <p>작은 화면에서도 읽기 쉽고 사용하기 편합니다.</p>
 
-            color: #2c3e50;
-
-            margin-bottom: 1rem;            padding: 1rem 0;            background: #e3f2fd;
-
-            display: flex;
-
-            align-items: center;        }            color: #1976d2;
-
-            gap: 0.5rem;
-
-        }            padding: 4px 12px;
+            </div>        }            justify-content: space-between;
 
 
 
-        .tool-card .icon {        .logo {            border-radius: 15px;
+            <div class="card">
 
-            font-size: 1.5rem;
+                <h2>💻 데스크톱 지원</h2>
 
-        }            font-size: 1.5rem;            font-size: 12px;
+                <p>큰 화면에서는 더 많은 콘텐츠를 한 번에 보여줍니다.</p>        .tool-card h3 {            align-items: center;        .genre-tag {
+
+                <p>Grid 레이아웃으로 자동으로 배치됩니다.</p>
+
+            </div>            color: #2c3e50;
 
 
+
+            <div class="card">            margin-bottom: 1rem;            padding: 1rem 0;            background: #e3f2fd;
+
+                <h2>🎯 핵심 기능</h2>
+
+                <p>복잡한 기능 없이 깔끔하고 간단합니다.</p>            display: flex;
+
+                <p>빠르게 로드되고 오류가 없습니다.</p>
+
+            </div>            align-items: center;        }            color: #1976d2;
+
+
+
+            <div class="card">            gap: 0.5rem;
+
+                <h2>✨ 반응형 디자인</h2>
+
+                <p>화면 크기에 따라 자동으로 조정됩니다.</p>        }            padding: 4px 12px;
+
+                <p>브라우저 창 크기를 바꿔보세요!</p>
+
+            </div>
+
+        </div>
+
+    </div>        .tool-card .icon {        .logo {            border-radius: 15px;
+
+
+
+    <div class="footer">            font-size: 1.5rem;
+
+        <p>&copy; 2025 반응형 웹 연습. 간단하게 만든 예제입니다.</p>
+
+    </div>        }            font-size: 1.5rem;            font-size: 12px;
+
+</body>
+
+</html>
 
         /* 계산기 스타일 */            font-weight: bold;            font-weight: bold;
 
