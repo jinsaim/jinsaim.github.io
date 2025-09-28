@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📔 스쳐가는 날들</title>
+    <title>📔 오늘의 기록</title>
     <style>
         * {
             margin: 0;
@@ -228,7 +228,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📔 스쳐가는 날들</h1>
+            <h1>📔 내가 잡은 오늘</h1>
             <div class="date-display" id="currentDate"></div>
         </div>
 
@@ -251,20 +251,20 @@
 
             <!-- 일기 작성 폼 -->
             <div class="diary-form">
-                <h2>✏️ 오늘의</h2>
+                <h2>✏️ 오늘은 지금이다</h2>
                 <form id="diaryForm">
                     <div class="form-group">
-                        <label for="diaryDate">날짜는</label>
+                        <label for="diaryDate">날짜</label>
                         <input type="date" id="diaryDate" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="diaryTitle">제목은</label>
+                        <label for="diaryTitle">제목</label>
                         <input type="text" id="diaryTitle" placeholder="오늘의 제목을 입력하세요" required>
                     </div>
 
                     <div class="form-group">
-                        <label>기분은</label>
+                        <label>기분</label>
                         <div class="mood-selector">
                             <button type="button" class="mood-btn" data-mood="😊">😊 좋음</button>
                             <button type="button" class="mood-btn" data-mood="😐">😐 보통</button>
@@ -276,7 +276,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="diaryContent">내용은</label>
+                        <label for="diaryContent">내용</label>
                         <textarea id="diaryContent" placeholder="오늘 있었던 일, 생각, 느낌을 자유롭게 적어보세요..." required></textarea>
                     </div>
 
