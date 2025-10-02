@@ -702,12 +702,7 @@
 
             readingContainer.innerHTML = booksToShow.map(book => {
                 const progress = book.totalPages > 0 ? (book.currentPage / book.totalPages) * 100 : 0;
-                const statusClass = `status-${book.status}`;
-                const statusText = {
-                    reading: '읽는 중',
-                    completed: '완독',
-                    paused: '잠시 중단'
-                };
+                // 상태/장르 표시를 숨깁니다 (저장 데이터는 유지)
 
                 return `
                     <div class="reading-item">
@@ -717,8 +712,6 @@
                                 <div class="book-author">저자: ${book.author}</div>
                                 <div class="book-meta">
                                     <span>${new Date(book.date).toLocaleDateString('ko-KR')}</span>
-                                    <span class="genre-tag">${book.genre}</span>
-                                    <span class="reading-status ${statusClass}">${statusText[book.status]}</span>
                                     ${book.totalPages > 0 ? `<span>${book.currentPage}/${book.totalPages} 페이지</span>` : ''}
                                 </div>
                             </div>
