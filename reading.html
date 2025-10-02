@@ -462,10 +462,6 @@
                     <div class="stat-label">총 페이지</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" id="avgRating">0</div>
-                    <div class="stat-label">평균 평점</div>
-                </div>
-                <div class="stat-item">
                     <div class="stat-number" id="thisMonthBooks">0</div>
                     <div class="stat-label">이번 달</div>
                 </div>
@@ -501,49 +497,9 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="readingStatus">읽기 상태</label>
-                            <select id="readingStatus">
-                                <option value="reading">읽는 중</option>
-                                <option value="completed">완독</option>
-                                <option value="paused">잠시 중단</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>평점</label>
-                            <div class="rating-selector" id="ratingSelector">
-                                <span class="star" data-rating="1">★</span>
-                                <span class="star" data-rating="2">★</span>
-                                <span class="star" data-rating="3">★</span>
-                                <span class="star" data-rating="4">★</span>
-                                <span class="star" data-rating="5">★</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>장르</label>
-                        <div class="genre-selector">
-                            <button type="button" class="genre-btn" data-genre="소설">소설</button>
-                            <button type="button" class="genre-btn" data-genre="에세이">에세이</button>
-                            <button type="button" class="genre-btn" data-genre="자기계발">자기계발</button>
-                            <button type="button" class="genre-btn" data-genre="비즈니스">비즈니스</button>
-                            <button type="button" class="genre-btn" data-genre="과학">과학</button>
-                            <button type="button" class="genre-btn" data-genre="역사">역사</button>
-                            <button type="button" class="genre-btn" data-genre="철학">철학</button>
-                            <button type="button" class="genre-btn" data-genre="기타">기타</button>
-                        </div>
-                    </div>
-
                     <div class="form-group">
                         <label for="favoriteQuote">인상 깊은 문장</label>
                         <textarea id="favoriteQuote" placeholder="책에서 인상 깊었던 문장이나 구절을 적어보세요..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="quotePage">문장이 있는 페이지</label>
-                        <input type="number" id="quotePage" placeholder="페이지 번호 (선택사항)">
                     </div>
 
                     <div class="form-group">
@@ -561,55 +517,18 @@
                 <p>휴대폰과 컴퓨터 간에 독서 기록을 동기화할 수 있습니다.</p>
                 
                 <div class="sync-buttons">
-                    <button class="btn-secondary" onclick="exportData()">📤 데이터 내보내기</button>
-                    <button class="btn-secondary" onclick="document.getElementById('importFile').click()">📥 데이터 가져오기</button>
                     <button class="btn-qr" onclick="generateQR()">📱 QR 코드 공유</button>
                     <button class="btn-qr" onclick="showQRScanner()">📷 QR 스캔</button>
-                    <button class="btn-secondary" onclick="clearAllData()">🗑️ 모든 데이터 삭제</button>
                 </div>
                 
                 <input type="file" id="importFile" class="file-input" accept=".json" onchange="importData(event)">
                 
                 <div class="sync-info">
                     💡 <strong>사용법:</strong><br>
-                    • <strong>내보내기:</strong> 현재 기기의 독서 기록을 JSON 파일로 다운로드<br>
-                    • <strong>가져오기:</strong> 다른 기기에서 내보낸 JSON 파일을 업로드하여 병합<br>
                     • <strong>QR 코드 공유:</strong> 데이터를 QR 코드로 생성하여 다른 기기에서 쉽게 스캔<br>
                     • <strong>QR 스캔:</strong> 다른 기기에서 생성한 QR 코드를 스캔하여 데이터 가져오기<br>
                     • 기존 데이터와 새 데이터가 자동으로 병합됩니다
                 </div>
-
-                <div class="privacy-info" style="background-color: #e8f5e8; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #27ae60;">
-                    <h4 style="color: #27ae60; margin-bottom: 10px;">🔒 프라이버시 보장</h4>
-                    <ul style="color: #2d5a2d; font-size: 14px; line-height: 1.5; margin: 0; padding-left: 20px;">
-                        <li><strong>완전한 개인정보 보호:</strong> 모든 독서 기록은 당신의 브라우저에만 저장됩니다</li>
-                        <li><strong>서버 저장 없음:</strong> 데이터가 인터넷 서버에 업로드되지 않습니다</li>
-                        <li><strong>다른 사람이 볼 수 없음:</strong> 외부 방문자는 빈 독서 기록장만 보입니다</li>
-                        <li><strong>기기별 독립:</strong> 컴퓨터와 휴대폰의 데이터가 각각 분리 저장됩니다</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- 검색 및 필터 -->
-            <div class="search-filter">
-                <input type="text" class="search-box" id="searchBox" placeholder="🔍 책 제목, 저자, 문장으로 검색...">
-                <select class="filter-select" id="genreFilter">
-                    <option value="">모든 장르</option>
-                    <option value="소설">소설</option>
-                    <option value="에세이">에세이</option>
-                    <option value="자기계발">자기계발</option>
-                    <option value="비즈니스">비즈니스</option>
-                    <option value="과학">과학</option>
-                    <option value="역사">역사</option>
-                    <option value="철학">철학</option>
-                    <option value="기타">기타</option>
-                </select>
-                <select class="filter-select" id="statusFilter">
-                    <option value="">모든 상태</option>
-                    <option value="reading">읽는 중</option>
-                    <option value="completed">완독</option>
-                    <option value="paused">잠시 중단</option>
-                </select>
             </div>
 
             <!-- 독서 목록 -->
@@ -867,13 +786,6 @@
             const totalPages = books.reduce((sum, book) => sum + (book.totalPages || 0), 0);
             totalPagesEl.textContent = totalPages.toLocaleString();
 
-            // 평균 평점
-            const ratedBooks = books.filter(book => book.rating > 0);
-            const avgRating = ratedBooks.length > 0 
-                ? (ratedBooks.reduce((sum, book) => sum + book.rating, 0) / ratedBooks.length).toFixed(1)
-                : 0;
-            avgRatingEl.textContent = avgRating;
-
             // 이번 달 읽은 책
             const thisMonth = new Date().getMonth();
             const thisYear = new Date().getFullYear();
@@ -884,119 +796,6 @@
             thisMonthBooksEl.textContent = thisMonthCount;
         }
 
-        // 데이터 내보내기
-        function exportData() {
-            if (books.length === 0) {
-                alert('내보낼 독서 기록이 없습니다.');
-                return;
-            }
-
-            const dataToExport = {
-                books: books,
-                exportDate: new Date().toISOString(),
-                totalBooks: books.length,
-                version: '1.0'
-            };
-
-            const dataStr = JSON.stringify(dataToExport, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = `독서기록_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            alert(`${books.length}개의 독서 기록을 내보냈습니다! 📤`);
-        }
-
-        // 데이터 가져오기
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    
-                    if (!importedData.books || !Array.isArray(importedData.books)) {
-                        alert('올바르지 않은 파일 형식입니다.');
-                        return;
-                    }
-
-                    const importedBooks = importedData.books;
-                    let newBooks = 0;
-                    let updatedBooks = 0;
-
-                    // 기존 책과 새로운 책 병합 (ID와 제목+저자로 중복 체크)
-                    importedBooks.forEach(importedBook => {
-                        const existingIndex = books.findIndex(book => 
-                            book.id === importedBook.id || 
-                            (book.title === importedBook.title && book.author === importedBook.author)
-                        );
-
-                        if (existingIndex !== -1) {
-                            // 기존 책이 있으면 더 최신 데이터로 업데이트
-                            const existingCreatedAt = new Date(books[existingIndex].createdAt || 0);
-                            const importedCreatedAt = new Date(importedBook.createdAt || 0);
-                            
-                            if (importedCreatedAt > existingCreatedAt) {
-                                books[existingIndex] = { ...importedBook };
-                                updatedBooks++;
-                            }
-                        } else {
-                            // 새로운 책이면 추가
-                            books.push({ ...importedBook, id: Date.now() + Math.random() });
-                            newBooks++;
-                        }
-                    });
-
-                    // 날짜순 정렬
-                    books.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-                    // 로컬 스토리지 저장
-                    localStorage.setItem('books', JSON.stringify(books));
-
-                    // 화면 업데이트
-                    displayBooks();
-                    updateStats();
-
-                    alert(`데이터 가져오기 완료! 📥\n새로운 책: ${newBooks}개\n업데이트된 책: ${updatedBooks}개`);
-
-                } catch (error) {
-                    alert('파일을 읽는 중 오류가 발생했습니다: ' + error.message);
-                }
-            };
-
-            reader.readAsText(file);
-            
-            // 파일 입력 초기화
-            event.target.value = '';
-        }
-
-        // 모든 데이터 삭제
-        function clearAllData() {
-            if (books.length === 0) {
-                alert('삭제할 데이터가 없습니다.');
-                return;
-            }
-
-            const confirmMessage = `정말로 모든 독서 기록(${books.length}개)을 삭제하시겠습니까?\n\n⚠️ 이 작업은 되돌릴 수 없습니다!\n\n삭제하기 전에 데이터를 내보내기하는 것을 권장합니다.`;
-            
-            if (confirm(confirmMessage)) {
-                const finalConfirm = confirm('마지막 확인: 정말로 모든 데이터를 삭제하시겠습니까?');
-                
-                if (finalConfirm) {
-                    books = [];
-                    localStorage.removeItem('books');
-                    displayBooks();
-                    updateStats();
-                    alert('모든 독서 기록이 삭제되었습니다. 🗑️');
-                }
-            }
-        }
 
         // 데이터 백업 알림 (7일마다)
         function checkBackupReminder() {
