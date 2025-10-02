@@ -577,23 +577,6 @@
             });
             
             readingDateInput.valueAsDate = today;
-            
-            // 평점 선택 이벤트
-            document.querySelectorAll('.star').forEach(star => {
-                star.addEventListener('click', function() {
-                    selectedRating = parseInt(this.dataset.rating);
-                    updateStarDisplay();
-                });
-            });
-
-            // 장르 선택 이벤트
-            document.querySelectorAll('.genre-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('selected'));
-                    this.classList.add('selected');
-                    selectedGenre = this.dataset.genre;
-                });
-            });
 
             // 읽기 상태 변경 시 현재 페이지 자동 설정 (요소가 있을 때만)
             const readingStatusEl = document.getElementById('readingStatus');
@@ -626,17 +609,6 @@
             updateStats();
         });
 
-        // 별점 표시 업데이트
-        function updateStarDisplay() {
-            document.querySelectorAll('.star').forEach((star, index) => {
-                if (index < selectedRating) {
-                    star.classList.add('active');
-                } else {
-                    star.classList.remove('active');
-                }
-            });
-        }
-
         // 독서 기록 저장
         function saveReading(e) {
             e.preventDefault();
@@ -648,7 +620,6 @@
             const dateEl = formScope.querySelector('#readingDate');
             const totalPagesEl = formScope.querySelector('#totalPages');
             const currentPageEl = formScope.querySelector('#currentPage');
-            const statusEl = formScope.querySelector('#readingStatus') || document.getElementById('readingStatus');
             const quoteEl = formScope.querySelector('#favoriteQuote');
             const quotePageEl = formScope.querySelector('#quotePage');
             const thoughtsEl = formScope.querySelector('#thoughts');
@@ -679,8 +650,6 @@
 
             // 폼 초기화
             if (readingForm) readingForm.reset();
-            selectedRating = 0;
-            selectedGenre = '';
             updateStarDisplay();
             document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('selected'));
             if (readingDateInput) readingDateInput.valueAsDate = new Date();
@@ -702,8 +671,6 @@
 
             readingContainer.innerHTML = booksToShow.map(book => {
                 const progress = book.totalPages > 0 ? (book.currentPage / book.totalPages) * 100 : 0;
-                // 상태/장르 표시를 숨깁니다 (저장 데이터는 유지)
-
                 return `
                     <div class="reading-item">
                         <div class="book-header">
@@ -758,9 +725,6 @@
         // 필터링
         function filterBooks() {
             const searchTerm = searchBox.value.toLowerCase();
-            const genreFilter = document.getElementById('genreFilter').value;
-            const statusFilter = document.getElementById('statusFilter').value;
-
             let filtered = books;
 
             if (searchTerm) {
@@ -772,14 +736,6 @@
                 );
             }
 
-            if (genreFilter) {
-                filtered = filtered.filter(book => book.genre === genreFilter);
-            }
-
-            if (statusFilter) {
-                filtered = filtered.filter(book => book.status === statusFilter);
-            }
-
             displayBooks(filtered);
         }
 
@@ -788,7 +744,6 @@
             const totalBooksEl = document.getElementById('totalBooks');
             const completedBooksEl = document.getElementById('completedBooks');
             const totalPagesEl = document.getElementById('totalPages');
-            const avgRatingEl = document.getElementById('avgRating');
             const thisMonthBooksEl = document.getElementById('thisMonthBooks');
 
             // 총 도서 수
