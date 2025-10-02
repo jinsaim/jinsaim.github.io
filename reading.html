@@ -595,23 +595,31 @@
                 });
             });
 
-            // 읽기 상태 변경 시 현재 페이지 자동 설정
-            document.getElementById('readingStatus').addEventListener('change', function() {
-                const totalPages = document.getElementById('totalPages').value;
-                const currentPage = document.getElementById('currentPage');
-                
-                if (this.value === 'completed' && totalPages) {
-                    currentPage.value = totalPages;
-                }
-            });
+            // 읽기 상태 변경 시 현재 페이지 자동 설정 (요소가 있을 때만)
+            const readingStatusEl = document.getElementById('readingStatus');
+            if (readingStatusEl) {
+                readingStatusEl.addEventListener('change', function() {
+                    // 폼 내부의 입력을 우선적으로 조회하여 중복 ID 충돌 방지
+                    const formScope = document.getElementById('readingForm');
+                    const totalPagesInput = formScope ? formScope.querySelector('#totalPages') : document.getElementById('totalPages');
+                    const currentPageInput = formScope ? formScope.querySelector('#currentPage') : document.getElementById('currentPage');
+
+                    const totalPagesVal = totalPagesInput && typeof totalPagesInput.value !== 'undefined' ? totalPagesInput.value : '';
+                    if (this.value === 'completed' && totalPagesVal) {
+                        if (currentPageInput) currentPageInput.value = totalPagesVal;
+                    }
+                });
+            }
 
             // 폼 제출 이벤트
-            readingForm.addEventListener('submit', saveReading);
+            if (readingForm) {
+                readingForm.addEventListener('submit', saveReading);
+            }
 
-            // 검색 및 필터 이벤트
-            searchBox.addEventListener('input', filterBooks);
-            genreFilter.addEventListener('change', filterBooks);
-            statusFilter.addEventListener('change', filterBooks);
+            // 검색 및 필터 이벤트 (존재할 때만 바인딩)
+            if (searchBox) searchBox.addEventListener('input', filterBooks);
+            if (genreFilter) genreFilter.addEventListener('change', filterBooks);
+            if (statusFilter) statusFilter.addEventListener('change', filterBooks);
 
             // 목록 표시
             displayBooks();
@@ -633,34 +641,49 @@
         function saveReading(e) {
             e.preventDefault();
 
+            // 폼 스코프 내에서 요소를 찾음 (동일 ID 중복 충돌 회피)
+            const formScope = document.getElementById('readingForm') || document;
+            const titleEl = formScope.querySelector('#bookTitle');
+            const authorEl = formScope.querySelector('#author');
+            const dateEl = formScope.querySelector('#readingDate');
+            const totalPagesEl = formScope.querySelector('#totalPages');
+            const currentPageEl = formScope.querySelector('#currentPage');
+            const statusEl = formScope.querySelector('#readingStatus') || document.getElementById('readingStatus');
+            const quoteEl = formScope.querySelector('#favoriteQuote');
+            const quotePageEl = formScope.querySelector('#quotePage');
+            const thoughtsEl = formScope.querySelector('#thoughts');
+
+            const todayStr = new Date().toISOString().slice(0, 10);
+
             const book = {
                 id: Date.now(),
-                title: document.getElementById('bookTitle').value,
-                author: document.getElementById('author').value,
-                date: document.getElementById('readingDate').value,
-                totalPages: parseInt(document.getElementById('totalPages').value) || 0,
-                currentPage: parseInt(document.getElementById('currentPage').value) || 0,
-                status: document.getElementById('readingStatus').value,
+                title: (titleEl && titleEl.value) ? titleEl.value.trim() : '',
+                author: (authorEl && authorEl.value) ? authorEl.value.trim() : '',
+                date: (dateEl && dateEl.value) ? dateEl.value : todayStr,
+                totalPages: parseInt(totalPagesEl && typeof totalPagesEl.value !== 'undefined' ? totalPagesEl.value : '') || 0,
+                currentPage: parseInt(currentPageEl && typeof currentPageEl.value !== 'undefined' ? currentPageEl.value : '') || 0,
+                status: (statusEl && statusEl.value) ? statusEl.value : 'reading',
                 rating: selectedRating,
                 genre: selectedGenre || '기타',
-                quote: document.getElementById('favoriteQuote').value,
-                quotePage: parseInt(document.getElementById('quotePage').value) || 0,
-                thoughts: document.getElementById('thoughts').value,
+                quote: (quoteEl && typeof quoteEl.value !== 'undefined') ? quoteEl.value : '',
+                quotePage: parseInt(quotePageEl && typeof quotePageEl.value !== 'undefined' ? quotePageEl.value : '') || 0,
+                thoughts: (thoughtsEl && typeof thoughtsEl.value !== 'undefined') ? thoughtsEl.value : '',
                 createdAt: new Date().toISOString()
             };
 
             books.push(book);
-            books.sort((a, b) => new Date(b.date) - new Date(a.date));
+            // 날짜 정렬 시 date가 없으면 createdAt 기준 사용
+            books.sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
 
             localStorage.setItem('books', JSON.stringify(books));
 
             // 폼 초기화
-            readingForm.reset();
+            if (readingForm) readingForm.reset();
             selectedRating = 0;
             selectedGenre = '';
             updateStarDisplay();
             document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('selected'));
-            readingDateInput.valueAsDate = new Date();
+            if (readingDateInput) readingDateInput.valueAsDate = new Date();
 
             displayBooks();
             updateStats();
