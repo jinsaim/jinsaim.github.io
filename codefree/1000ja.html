@@ -24,6 +24,7 @@
 		.toolbar select, .toolbar button, .toolbar input[type="text"] { background: #0b1220; color: var(--text); border: 1px solid #1f2937; padding: .5rem .75rem; border-radius: .5rem; }
 		.toolbar button { cursor: pointer; }
 		.toolbar button.primary { background: var(--accent); color: #052e13; border-color: transparent; font-weight: 600; }
+		.toolbar label.lbl { color: var(--muted); font-size: .9rem; margin-left: .25rem; }
 		.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: .75rem; margin-top: 1rem; }
 		.card { background: #0b1220; border: 1px solid #1f2937; border-radius: .75rem; padding: .75rem; text-align: center; transition: transform .12s ease, border-color .12s ease; }
 		.card:hover { transform: translateY(-2px); border-color: #334155; }
@@ -72,6 +73,7 @@
 				<option value="write">쓰기</option>
 			</select>
 			<input type="text" id="search" placeholder="검색(한자/음/뜻)" />
+			<label for="groupFilter" class="lbl">묶음:</label>
 			<select id="groupFilter" title="묶음 선택">
 				<option value="">전체 묶음</option>
 			</select>
