@@ -411,12 +411,24 @@
 						// 기본 키 정규화 (read 없어도 유지)
 						let incoming = items.map(x => ({ ch: x.ch || x.char || x.hanja, read: x.read || x.kor || x.ko || '', mean: x.mean || x.desc || '', group: x.group || x.grp || 'import' })).filter(x => x.ch);
 
-						// merge 옵션: true면 기존 data에 추가(문자 기준 중복 제거), false면 교체
+						// merge 옵션: true면 기존 data에 추가(문자 기준), 동시에 기존 항목의 빈/누락 필드를 incoming으로 보강
 						const wantMerge = !!(json && json.merge);
 						let base = wantMerge ? [...data] : [];
 						if (wantMerge) {
-							const exist = new Set(base.map(x => x.ch));
-							for (const it of incoming) { if (!exist.has(it.ch)) { base.push(it); exist.add(it.ch); } }
+							const byChar = new Map(base.map(x => [x.ch, { ...x }]));
+							for (const it of incoming) {
+								const cur = byChar.get(it.ch);
+								if (cur) {
+									// 읽기/뜻/그룹 보강(비어있지 않은 값만 덮어쓰기)
+									if (it.read) cur.read = it.read;
+									if (it.mean) cur.mean = it.mean;
+									if (it.group) cur.group = it.group;
+									byChar.set(it.ch, cur);
+								} else {
+									byChar.set(it.ch, it);
+								}
+							}
+							base = Array.from(byChar.values());
 						} else {
 							base = incoming;
 						}
