@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>천자문 연습</title>
+	<style>
+		:root {
+			--bg: #0f172a; /* slate-900 */
+			--panel: #111827; /* gray-900 */
+			--muted: #94a3b8; /* slate-400 */
+			--text: #e5e7eb; /* gray-200 */
+			--accent: #22c55e; /* green-500 */
+			--accent-2: #60a5fa; /* blue-400 */
+			--danger: #f43f5e; /* rose-500 */
+			--warn: #f59e0b; /* amber-500 */
+		}
+		* { box-sizing: border-box; }
+		body { margin: 0; background: linear-gradient(120deg, #0b1020, #111a2f); color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, sans-serif; }
+		header { padding: 1rem 1.25rem; border-bottom: 1px solid #1f2937; position: sticky; top: 0; background: rgba(17,24,39,0.8); backdrop-filter: blur(6px); }
+		header h1 { margin: 0; font-size: 1.125rem; }
+		.container { max-width: 980px; margin: 0 auto; padding: 1rem 1.25rem; }
+		.toolbar { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+		.toolbar select, .toolbar button, .toolbar input[type="text"] { background: #0b1220; color: var(--text); border: 1px solid #1f2937; padding: .5rem .75rem; border-radius: .5rem; }
+		.toolbar button { cursor: pointer; }
+		.toolbar button.primary { background: var(--accent); color: #052e13; border-color: transparent; font-weight: 600; }
+		.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: .75rem; margin-top: 1rem; }
+		.card { background: #0b1220; border: 1px solid #1f2937; border-radius: .75rem; padding: .75rem; text-align: center; transition: transform .12s ease, border-color .12s ease; }
+		.card:hover { transform: translateY(-2px); border-color: #334155; }
+		.hanja { font-size: 28px; line-height: 1.2; }
+		.hangeul { font-size: 12px; color: var(--muted); margin-top: .25rem; }
+		.meta { margin-top: .35rem; font-size: 11px; color: #a1a1aa; }
+		.mode { display: none; }
+		.mode.active { display: block; }
+		.panel { background: #0b1220; border: 1px solid #1f2937; border-radius: .75rem; padding: 1rem; margin-top: 1rem; }
+		.row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; align-items: center; }
+		.row input, .row textarea { width: 100%; background: #0b1020; border: 1px solid #1f2937; color: var(--text); border-radius: .5rem; padding: .6rem .7rem; }
+		.row label { font-size: .9rem; color: var(--muted); }
+		.quiz { text-align: center; }
+		.quiz .question { font-size: 36px; margin: .75rem 0; }
+		.quiz .hint { color: var(--muted); font-size: .95rem; }
+		.quiz input { margin-top: .5rem; font-size: 1rem; }
+		.quiz .result { margin-top: .75rem; font-weight: 600; }
+		.ok { color: var(--accent); }
+		.bad { color: var(--danger); }
+		.footer { color: var(--muted); font-size: .85rem; margin-top: 1rem; text-align: right; }
+	</style>
+</head>
+<body>
+	<header>
+		<h1>천자문 연습 · 1000字</h1>
+	</header>
+	<div class="container">
+		<div class="toolbar">
+			<select id="modeSelect" title="모드 선택">
+				<option value="learn">학습</option>
+				<option value="quiz">퀴즈</option>
+				<option value="write">쓰기</option>
+			</select>
+			<input type="text" id="search" placeholder="검색(한자/음/뜻)" />
+			<button id="shuffleBtn">섞기</button>
+			<button id="resetBtn">초기화</button>
+			<button id="exportBtn">백업</button>
+			<input id="importFile" type="file" accept="application/json" style="display:none" />
+			<button id="importBtn">가져오기</button>
+			<span class="footer" id="countInfo"></span>
+		</div>
+
+		<!-- 학습 모드 -->
+		<section id="mode-learn" class="mode active">
+			<div class="grid" id="learnGrid"></div>
+		</section>
+
+		<!-- 퀴즈 모드 -->
+		<section id="mode-quiz" class="mode">
+			<div class="panel quiz">
+				<div class="hint">한자를 보고 음(훈)을 쓰세요</div>
+				<div class="question" id="quizQuestion">天</div>
+				<input id="quizAnswer" type="text" placeholder="정답 입력" />
+				<div>
+					<button id="quizCheck" class="primary">정답 확인</button>
+					<button id="quizNext">다음</button>
+				</div>
+				<div class="result" id="quizResult"></div>
+			</div>
+		</section>
+
+		<!-- 쓰기 모드 -->
+		<section id="mode-write" class="mode">
+			<div class="panel">
+				<div class="row">
+					<label>한자</label>
+					<input id="wChar" maxlength="1" placeholder="例) 天" />
+				</div>
+				<div class="row">
+					<label>음/훈</label>
+					<input id="wRead" placeholder="例) 천/하늘" />
+				</div>
+				<div class="row">
+					<label>뜻/설명</label>
+					<textarea id="wMean" rows="2" placeholder="간단한 설명"></textarea>
+				</div>
+				<div class="row">
+					<label>묶음(행/절)</label>
+					<input id="wGroup" placeholder="例) 001 (1~4자)" />
+				</div>
+				<div style="margin-top:.5rem">
+					<button id="wAdd" class="primary">추가</button>
+				</div>
+			</div>
+		</section>
+
+	</div>
+
+	<script>
+		// 기본 데이터(시드). 이후 JSON으로 전체를 불러올 수 있음
+		const seed = [
+			{ ch: '天', read: '천', mean: '하늘', group: '001' },
+			{ ch: '地', read: '지', mean: '땅', group: '001' },
+			{ ch: '玄', read: '현', mean: '검다, 오묘하다', group: '001' },
+			{ ch: '黃', read: '황', mean: '누르다', group: '001' },
+			{ ch: '宇', read: '우', mean: '집, 공간', group: '002' },
+			{ ch: '宙', read: '주', mean: '시간, 시공', group: '002' },
+			{ ch: '洪', read: '홍', mean: '크다', group: '002' },
+			{ ch: '荒', read: '황', mean: '거칠다', group: '002' },
+		];
+
+		const LS_KEY = 'thousandChars_v1';
+		let data = [];
+
+		function loadData() {
+			try {
+				const raw = localStorage.getItem(LS_KEY);
+				data = raw ? JSON.parse(raw) : seed;
+			} catch (e) {
+				console.warn('localStorage 읽기 실패, seed 사용', e);
+				data = seed;
+			}
+		}
+
+		function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch (e) { console.warn('저장 실패', e); } }
+
+		function setMode(mode) {
+			document.querySelectorAll('.mode').forEach(el => el.classList.remove('active'));
+			document.getElementById('mode-' + mode).classList.add('active');
+		}
+
+		function renderLearn(list) {
+			const el = document.getElementById('learnGrid');
+			el.innerHTML = (list || data).map((x, i) => `
+				<div class="card" data-idx="${i}">
+					<div class="hanja">${x.ch}</div>
+					<div class="hangeul">${x.read}</div>
+					<div class="meta">${x.mean || ''}</div>
+				</div>
+			`).join('');
+			document.getElementById('countInfo').textContent = `${(list || data).length}자`;
+		}
+
+		function shuffle(arr) {
+			const a = [...arr];
+			for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+			return a;
+		}
+
+		// 검색
+		function doSearch() {
+			const q = document.getElementById('search').value.trim();
+			if (!q) { renderLearn(); return; }
+			const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+			const filtered = data.filter(x => re.test(x.ch) || re.test(x.read) || re.test(x.mean || ''));
+			renderLearn(filtered);
+		}
+
+		// 퀴즈
+		let quizIndex = 0;
+		let quizList = [];
+		function startQuiz() { quizList = shuffle(data); quizIndex = 0; showQuiz(); }
+		function showQuiz() {
+			if (!quizList.length) { startQuiz(); return; }
+			const q = quizList[quizIndex % quizList.length];
+			document.getElementById('quizQuestion').textContent = q.ch;
+			document.getElementById('quizAnswer').value = '';
+			document.getElementById('quizResult').textContent = '';
+		}
+		function checkQuiz() {
+			const q = quizList[quizIndex % quizList.length];
+			const a = document.getElementById('quizAnswer').value.trim();
+			const ok = a && (a === q.read || (q.mean && a === q.mean));
+			const r = document.getElementById('quizResult');
+			r.textContent = ok ? `정답! (${q.read}${q.mean ? ' / ' + q.mean : ''})` : `오답: ${q.read}${q.mean ? ' / ' + q.mean : ''}`;
+			r.className = 'result ' + (ok ? 'ok' : 'bad');
+		}
+
+		// 쓰기(추가)
+		function addItem() {
+			const ch = document.getElementById('wChar').value.trim();
+			const read = document.getElementById('wRead').value.trim();
+			const mean = document.getElementById('wMean').value.trim();
+			const group = document.getElementById('wGroup').value.trim() || 'custom';
+			if (!ch || !read) { alert('한자와 음/훈을 입력해주세요.'); return; }
+			data.push({ ch, read, mean, group });
+			saveData();
+			renderLearn();
+			alert('추가되었습니다.');
+			document.getElementById('wChar').value = '';
+			document.getElementById('wRead').value = '';
+			document.getElementById('wMean').value = '';
+			document.getElementById('wGroup').value = '';
+		}
+
+		// 백업/가져오기
+		function doExport() {
+			const blob = new Blob([JSON.stringify({ items: data, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json;charset=utf-8' });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url; a.download = '1000ja-backup.json'; a.click();
+			setTimeout(() => URL.revokeObjectURL(url), 500);
+		}
+		function doImport(file) {
+			const reader = new FileReader();
+			reader.onload = () => {
+				try {
+					const json = JSON.parse(reader.result);
+					const items = json.items || json.data || json || [];
+					if (!Array.isArray(items)) throw new Error('잘못된 형식');
+					// 기본 키 정규화
+					data = items.map(x => ({ ch: x.ch || x.char || x.hanja, read: x.read || x.kor || x.ko || '', mean: x.mean || x.desc || '', group: x.group || x.grp || 'import' })).filter(x => x.ch && x.read);
+					saveData();
+					renderLearn();
+					alert(`불러오기 완료: ${data.length}자`);
+				} catch (e) {
+					alert('가져오기 실패: ' + e.message);
+				}
+			};
+			reader.readAsText(file, 'utf-8');
+		}
+
+		// 초기화
+		function doReset() { if (confirm('저장된 학습 데이터를 초기화할까요?')) { localStorage.removeItem(LS_KEY); loadData(); renderLearn(); startQuiz(); } }
+
+		// 이벤트 바인딩
+		document.addEventListener('DOMContentLoaded', () => {
+			loadData();
+			renderLearn();
+			startQuiz();
+
+			document.getElementById('modeSelect').addEventListener('change', (e) => setMode(e.target.value));
+			document.getElementById('search').addEventListener('input', doSearch);
+			document.getElementById('shuffleBtn').addEventListener('click', () => { data = shuffle(data); saveData(); renderLearn(); startQuiz(); });
+			document.getElementById('resetBtn').addEventListener('click', doReset);
+			document.getElementById('exportBtn').addEventListener('click', doExport);
+			document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
+			document.getElementById('importFile').addEventListener('change', (e) => e.target.files[0] && doImport(e.target.files[0]));
+
+			document.getElementById('quizCheck').addEventListener('click', checkQuiz);
+			document.getElementById('quizNext').addEventListener('click', () => { quizIndex++; showQuiz(); });
+			document.getElementById('quizAnswer').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); checkQuiz(); } });
+
+			document.getElementById('wAdd').addEventListener('click', addItem);
+		});
+	</script>
+</body>
+</html>
+
