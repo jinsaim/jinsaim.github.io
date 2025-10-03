@@ -379,92 +379,45 @@
 				}
 			}
 
-			function doImport(file) {
-				const reader = new FileReader();
-				reader.onload = () => {
-					try {
-						const json = JSON.parse(reader.result);
-						let items = [];
-						if (Array.isArray(json)) {
-							items = json;
-						} else if (json && typeof json === 'object') {
-							items = json.items || json.data || json.thousandChars_v1 || json.list || null;
-							if (!Array.isArray(items)) {
-								// root 객체의 첫 번째 Array 값을 자동 탐지
-								const firstArray = Object.values(json).find(v => Array.isArray(v));
-								if (Array.isArray(firstArray)) items = firstArray;
-								// 문자열 페이로드(text/thousandCharsText 등) 자동 처리
-								if (!Array.isArray(items)) {
-									const textLike = json.text || json.thousandCharsText || json.content || null;
-									if (typeof textLike === 'string' && textLike.trim().length >= 4) {
-										const cleaned = textLike.replace(/\s+/g, '');
-										const onlyHan = Array.from(cleaned).filter(ch => /\p{Script=Han}/u.test(ch));
-										if (onlyHan.length >= 4) {
-											items = onlyHan.map((ch, i) => ({ ch, read: '', mean: '', group: String(Math.floor(i/4)+1).padStart(3,'0') }));
-										}
-									}
-								}
-							}
-						}
-						if (!Array.isArray(items)) throw new Error('지원되는 JSON 형식이 아닙니다. 배열(items/data/thousandChars_v1/list), 루트 배열, 또는 텍스트(text/thousandCharsText)로 1000자를 제공하세요.');
-
-						// 기본 키 정규화 (read 없어도 유지)
-						let incoming = items.map(x => ({ ch: x.ch || x.char || x.hanja, read: x.read || x.kor || x.ko || '', mean: x.mean || x.desc || '', group: x.group || x.grp || 'import' })).filter(x => x.ch);
-
-						// merge 옵션: true면 기존 data에 추가(문자 기준), 동시에 기존 항목의 빈/누락 필드를 incoming으로 보강
-						const wantMerge = !!(json && json.merge);
-						let base = wantMerge ? [...data] : [];
-						if (wantMerge) {
-							const byChar = new Map(base.map(x => [x.ch, { ...x }]));
-							for (const it of incoming) {
-								const cur = byChar.get(it.ch);
-								if (cur) {
-									// 읽기/뜻/그룹 보강(비어있지 않은 값만 덮어쓰기)
-									if (it.read) cur.read = it.read;
-									if (it.mean) cur.mean = it.mean;
-									if (it.group) cur.group = it.group;
-									byChar.set(it.ch, cur);
-								} else {
-									byChar.set(it.ch, it);
-								}
-							}
-							base = Array.from(byChar.values());
-						} else {
-							base = incoming;
-						}
-
-						// dict/map 병합 (문자 기준으로 read/mean/group 덮어쓰기)
-						const applyDict = (dictObj) => {
-							if (!dictObj || typeof dictObj !== 'object') return;
-							const dict = dictObj.dict || dictObj.map || dictObj.dictionary || null;
-							if (!dict || typeof dict !== 'object') return;
-							const byChar = new Map(base.map(x => [x.ch, x]));
-							for (const [ch, v] of Object.entries(dict)) {
-								if (!ch || typeof v !== 'object') continue;
-								const t = byChar.get(ch) || { ch, read: '', mean: '', group: 'import' };
-								if (v.read) t.read = v.read;
-								if (v.kor || v.ko) t.read = v.kor || v.ko;
-								if (v.mean) t.mean = v.mean;
-								if (v.desc) t.mean = v.desc;
-								if (v.group || v.grp) t.group = v.group || v.grp;
-								byChar.set(ch, t);
-							}
-							base = Array.from(byChar.values());
-						};
-
-						applyDict(json);
-
-						data = base;
-						saveData();
-						rebuildGroupFilter();
-						doSearch();
-						alert(`불러오기 완료${wantMerge ? ' (병합)' : ''}: ${data.length}자`);
-					} catch (e) {
-						alert('가져오기 실패: ' + e.message);
-					}
-				};
-				reader.readAsText(file, 'utf-8');
+			function closeStroke(){
+				strokeModal.classList.remove('show');
 			}
+
+			learnGrid.addEventListener('click', (ev) => {
+				const card = ev.target.closest('.card');
+				if (!card) return;
+				const idx = Number(card.getAttribute('data-idx'));
+				const item = (data[idx]) || null;
+				if (!item) return;
+				openStroke(item.ch, item.read, item.mean);
+			});
+			strokeClose.addEventListener('click', closeStroke);
+			strokeReplay.addEventListener('click', () => { if (writer) writer.animateCharacter(); });
+			strokeModal.addEventListener('click', (e) => { if (e.target === strokeModal) closeStroke(); });
+		});
+
+		function handleBulk(mode){
+			const raw = document.getElementById('bulkText').value;
+			if (!raw || raw.trim().length < 4) { alert('문자를 붙여넣어 주세요.'); return; }
+			// 공백/제어문자 제거 후 한자만 필터링
+			const cleaned = raw.replace(/\s+/g, '');
+			const onlyHan = Array.from(cleaned).filter(ch => /\p{Script=Han}/u.test(ch));
+			if (onlyHan.length < 4) { alert('유효한 입력이 아닙니다. 한자(漢字)만 붙여넣어 주세요.'); return; }
+			const built = onlyHan.map((ch, i) => ({ ch, read: '', mean: '', group: String(Math.floor(i/4)+1).padStart(3,'0') }));
+			if (mode === 'replace') {
+				data = built;
+			} else {
+				// merge: 문자 기준 중복 제거
+				const existingSet = new Set(data.map(x => x.ch));
+				const toAdd = built.filter(x => !existingSet.has(x.ch));
+				data = data.concat(toAdd);
+			}
+			saveData();
+			rebuildGroupFilter();
+			doSearch();
+			alert(`등록 완료: 총 ${data.length}자, 그룹 ${new Set(data.map(x=>x.group).filter(Boolean)).size}개`);
+			document.getElementById('bulkText').value = '';
+			document.getElementById('bulkModal').classList.remove('show');
 		}
 	</script>
 </body>
