@@ -39,6 +39,7 @@ p  { margin: 0; color: #444; }
 .theme-career    { --card-bg: #e6f0ff; --card-border: #c7dcff; --accent: #1f6ae5; } /* 파 */
 .theme-holistic  { --card-bg: #ecebff; --card-border: #d8d6ff; --accent: #5145cd; } /* 남 */
 .theme-thatisit  { --card-bg: #f1e9ff; --card-border: #e0d0ff; --accent: #9333ea; } /* 보라 (퍼플) */
+.theme-1000ja   { --card-bg: #e6fcf5; --card-border: #c3fae8; --accent: #0ca678; } /* 청록 (틸) */
 
 .links .card {
   background: var(--card-bg);
@@ -71,6 +72,7 @@ footer p { margin: 0; text-align: center; font-size: 0.95rem; color: #fff; }
 	.theme-career .card     { background: #0f1b2a; border-color: #16304a; }
     .theme-holistic .card   { background: #161531; border-color: #26245a; }
 	.theme-thatisit .card   { background: #1e1430; border-color: #2e2050; }
+	.theme-1000ja .card     { background: #0b211c; border-color: #143a32; }
 
 	p { color: #b7bcc8; }
   footer p { color: #fff; }
