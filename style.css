@@ -41,6 +41,7 @@ p  { margin: 0; color: #444; }
 .theme-thatisit  { --card-bg: #f1e9ff; --card-border: #e0d0ff; --accent: #9333ea; } /* 보라 (퍼플) */
 .theme-1000ja   { --card-bg: #e6fcf5; --card-border: #c3fae8; --accent: #0ca678; } /* 청록 (틸) */
 .theme-diary    { --card-bg: #fff0f6; --card-border: #ffdeeb; --accent: #d6336c; } /* 분홍 (핑크) */
+.theme-reading  { --card-bg: #f1f3f5; --card-border: #dee2e6; --accent: #495057; } /* 회색 (Gray) */
 
 .links .card {
   background: var(--card-bg);
@@ -75,6 +76,7 @@ footer p { margin: 0; text-align: center; font-size: 0.95rem; color: #fff; }
 	.theme-thatisit .card   { background: #1e1430; border-color: #2e2050; }
 	.theme-1000ja .card     { background: #0b211c; border-color: #143a32; }
 	.theme-diary .card      { background: #23121a; border-color: #3a1e2c; }
+	.theme-reading .card    { background: #1a1d20; border-color: #2c3136; }
 
 	p { color: #b7bcc8; }
   footer p { color: #fff; }
