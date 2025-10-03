@@ -274,8 +274,18 @@
 			reader.onload = () => {
 				try {
 					const json = JSON.parse(reader.result);
-					const items = json.items || json.data || json || [];
-					if (!Array.isArray(items)) throw new Error('잘못된 형식');
+					let items = [];
+					if (Array.isArray(json)) {
+						items = json;
+					} else if (json && typeof json === 'object') {
+						items = json.items || json.data || json.thousandChars_v1 || json.list || null;
+						if (!Array.isArray(items)) {
+							// root 객체의 첫 번째 Array 값을 자동 탐지
+							const firstArray = Object.values(json).find(v => Array.isArray(v));
+							if (Array.isArray(firstArray)) items = firstArray;
+						}
+					}
+					if (!Array.isArray(items)) throw new Error('지원되는 JSON 형식이 아닙니다. items 배열, thousandChars_v1 배열, 또는 루트 배열을 제공하세요.');
 					// 기본 키 정규화
 					data = items.map(x => ({ ch: x.ch || x.char || x.hanja, read: x.read || x.kor || x.ko || '', mean: x.mean || x.desc || '', group: x.group || x.grp || 'import' })).filter(x => x.ch && x.read);
 					saveData();
