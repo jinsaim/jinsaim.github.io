@@ -1,4 +1,0 @@
-{
-  "presetUrl": "https://zh.wikisource.org/wiki/%E5%8D%83%E5%AD%97%E6%96%87?action=raw",
-  "note": "Public-domain source (Wikisource) raw text. The app will fetch this URL, take the first 1000 unique Han characters in order, and auto-group 4 per 묶음 (001...)."
-}

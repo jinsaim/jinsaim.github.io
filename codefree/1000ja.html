@@ -59,7 +59,8 @@
 		.btn:hover { border-color: #475569; }
 		.btn.primary { background: var(--accent); color: #052e13; border-color: transparent; font-weight: 700; }
 
-		/* (bulk import removed) */
+		/* Bulk import modal */
+		#bulkText { width: 100%; min-height: 180px; background: #0b1020; color: var(--text); border: 1px solid #1f2937; border-radius: .5rem; padding: .75rem; }
 	</style>
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@2.2/dist/hanzi-writer.min.js"></script>
 </head>
@@ -84,6 +85,7 @@
 			<button id="exportBtn">백업</button>
 			<input id="importFile" type="file" accept="application/json" style="display:none" />
 			<button id="importBtn">가져오기</button>
+			<button id="bulkBtn" class="primary" title="천자문 전체를 빠르게 붙여넣기로 등록">전체 붙여넣기</button>
 			<span class="footer" id="countInfo"></span>
 		</div>
 
@@ -150,7 +152,25 @@
 			</div>
 		</div>
 
-
+			<!-- Bulk Paste Modal -->
+			<div id="bulkModal" class="modal" aria-hidden="true">
+				<div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="bulkTitle">
+					<div class="modal-header">
+						<div class="modal-title" id="bulkTitle">천자문 전체 붙여넣기</div>
+						<button id="bulkClose" class="btn" aria-label="닫기">닫기</button>
+					</div>
+					<div class="modal-body" style="width:min(92vw, 620px)">
+						<div style="font-size:.9rem; color:var(--muted); line-height:1.6; text-align:left;">
+							천자문 1000자를 복사해 아래 상자에 붙여넣으세요. 공백/줄바꿈은 제거되며, 4자씩 한 묶음(001부터)으로 자동 그룹화됩니다.
+						</div>
+						<textarea id="bulkText" placeholder="예) 天地玄黃宇宙洪荒...  (1000자)"></textarea>
+					</div>
+					<div class="modal-footer">
+						<button id="bulkReplace" class="btn" title="기존 데이터를 전체 교체">전체 교체</button>
+						<button id="bulkMerge" class="btn primary" title="기존 데이터에 추가(중복 제거)">추가(중복 제거)</button>
+					</div>
+				</div>
+			</div>
 
 	<script>
 		// 기본 데이터(시드). 이후 JSON으로 전체를 불러올 수 있음
@@ -274,88 +294,11 @@
 			reader.onload = () => {
 				try {
 					const json = JSON.parse(reader.result);
-					let items = [];
-					if (Array.isArray(json)) {
-						items = json;
-					} else if (json && typeof json === 'object') {
-						items = json.items || json.data || json.thousandChars_v1 || json.list || null;
-						if (!Array.isArray(items)) {
-							// root 객체의 첫 번째 Array 값을 자동 탐지
-							const firstArray = Object.values(json).find(v => Array.isArray(v));
-							if (Array.isArray(firstArray)) items = firstArray;
-							// 문자열 페이로드(text/thousandCharsText 등) 자동 처리
-							if (!Array.isArray(items)) {
-								const textLike = json.text || json.thousandCharsText || json.content || null;
-								if (typeof textLike === 'string' && textLike.trim().length >= 4) {
-									const cleaned = textLike.replace(/\s+/g, '');
-									const onlyHan = Array.from(cleaned).filter(ch => /\p{Script=Han}/u.test(ch));
-									if (onlyHan.length >= 4) {
-										items = onlyHan.map((ch, i) => ({ ch, read: '', mean: '', group: String(Math.floor(i/4)+1).padStart(3,'0') }));
-									}
-								}
-							}
-							// presetUrl: 원문을 페치하여 생성
-							if (!Array.isArray(items) && typeof json.presetUrl === 'string') {
-								fetch(json.presetUrl)
-									.then(r => r.text())
-									.then(txt => {
-										const cleaned2 = txt.replace(/\s+/g, '');
-										const onlyHan2 = Array.from(cleaned2).filter(ch => /\p{Script=Han}/u.test(ch));
-										// 고유 문자 순서 유지하며 1000자 제한
-										const seen = new Set();
-										const uniq = [];
-										for (const c of onlyHan2) { if (!seen.has(c)) { seen.add(c); uniq.push(c); if (uniq.length >= 1000) break; } }
-										const built2 = uniq.map((ch, i) => ({ ch, read: '', mean: '', group: String(Math.floor(i/4)+1).padStart(3,'0') }));
-										data = built2;
-										saveData();
-										rebuildGroupFilter();
-										renderLearn();
-										alert(`프리셋 불러오기 완료: ${data.length}자`);
-									})
-									.catch(err => alert('프리셋 URL 불러오기 실패: ' + err.message));
-								return; // presetUrl 비동기 분기 종료
-							}
-						}
-					}
-					if (!Array.isArray(items)) throw new Error('지원되는 JSON 형식이 아닙니다. 배열(items/data/thousandChars_v1/list), 루트 배열, 텍스트(text/thousandCharsText), 또는 presetUrl을 제공하세요.');
-
+					const items = json.items || json.data || json || [];
+					if (!Array.isArray(items)) throw new Error('잘못된 형식');
 					// 기본 키 정규화
-					let base = items.map(x => ({ ch: x.ch || x.char || x.hanja, read: x.read || x.kor || x.ko || '', mean: x.mean || x.desc || '', group: x.group || x.grp || 'import' })).filter(x => x.ch);
-
-					// dict/map 병합 (문자 기준)
-					const applyDict = (dictObj) => {
-						if (!dictObj || typeof dictObj !== 'object') return;
-						const dict = dictObj.dict || dictObj.map || dictObj.dictionary || null;
-						if (!dict || typeof dict !== 'object') return;
-						const byChar = new Map(base.map(x => [x.ch, x]));
-						for (const [ch, v] of Object.entries(dict)) {
-							if (!ch || typeof v !== 'object') continue;
-							const t = byChar.get(ch) || { ch, read: '', mean: '', group: 'import' };
-							if (v.read) t.read = v.read;
-							if (v.kor || v.ko) t.read = v.kor || v.ko;
-							if (v.mean) t.mean = v.mean;
-							if (v.desc) t.mean = v.desc;
-							if (v.group || v.grp) t.group = v.group || v.grp;
-							byChar.set(ch, t);
-						}
-						base = Array.from(byChar.values());
-					};
-
-					// 즉시 병합용 dict/map
-					applyDict(json);
-
-					// dictUrl 병합 (비동기)
-					if (json && typeof json.dictUrl === 'string') {
-						fetch(json.dictUrl)
-							.then(r => r.json())
-							.then(d => { applyDict(d); data = base; saveData(); rebuildGroupFilter(); renderLearn(); alert(`불러오기 완료(사전 병합): ${data.length}자`); })
-							.catch(err => { data = base; saveData(); rebuildGroupFilter(); renderLearn(); alert(`불러오기 완료(사전 병합 실패, 기본만): ${data.length}자`); console.warn(err); });
-						return;
-					}
-
-					data = base;
+					data = items.map(x => ({ ch: x.ch || x.char || x.hanja, read: x.read || x.kor || x.ko || '', mean: x.mean || x.desc || '', group: x.group || x.grp || 'import' })).filter(x => x.ch && x.read);
 					saveData();
-					rebuildGroupFilter();
 					renderLearn();
 					alert(`불러오기 완료: ${data.length}자`);
 				} catch (e) {
@@ -384,7 +327,13 @@
 			document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
 			document.getElementById('importFile').addEventListener('change', (e) => { if (e.target.files[0]) { doImport(e.target.files[0]); setTimeout(() => { rebuildGroupFilter(); doSearch(); }, 100); } });
 
-
+			// Bulk paste modal events
+			const bulkModal = document.getElementById('bulkModal');
+			document.getElementById('bulkBtn').addEventListener('click', () => { bulkModal.classList.add('show'); });
+			document.getElementById('bulkClose').addEventListener('click', () => { bulkModal.classList.remove('show'); });
+			bulkModal.addEventListener('click', (e) => { if (e.target === bulkModal) bulkModal.classList.remove('show'); });
+			document.getElementById('bulkReplace').addEventListener('click', () => handleBulk('replace'));
+			document.getElementById('bulkMerge').addEventListener('click', () => handleBulk('merge'));
 
 			document.getElementById('quizCheck').addEventListener('click', checkQuiz);
 			document.getElementById('quizNext').addEventListener('click', () => { quizIndex++; showQuiz(); });
@@ -443,7 +392,29 @@
 			strokeModal.addEventListener('click', (e) => { if (e.target === strokeModal) closeStroke(); });
 		});
 
-
+		function handleBulk(mode){
+			const raw = document.getElementById('bulkText').value;
+			if (!raw || raw.trim().length < 4) { alert('문자를 붙여넣어 주세요.'); return; }
+			// 공백/제어문자 제거 후 한자만 필터링
+			const cleaned = raw.replace(/\s+/g, '');
+			const onlyHan = Array.from(cleaned).filter(ch => /\p{Script=Han}/u.test(ch));
+			if (onlyHan.length < 4) { alert('유효한 입력이 아닙니다. 한자(漢字)만 붙여넣어 주세요.'); return; }
+			const built = onlyHan.map((ch, i) => ({ ch, read: '', mean: '', group: String(Math.floor(i/4)+1).padStart(3,'0') }));
+			if (mode === 'replace') {
+				data = built;
+			} else {
+				// merge: 문자 기준 중복 제거
+				const existingSet = new Set(data.map(x => x.ch));
+				const toAdd = built.filter(x => !existingSet.has(x.ch));
+				data = data.concat(toAdd);
+			}
+			saveData();
+			rebuildGroupFilter();
+			doSearch();
+			alert(`등록 완료: 총 ${data.length}자, 그룹 ${new Set(data.map(x=>x.group).filter(Boolean)).size}개`);
+			document.getElementById('bulkText').value = '';
+			document.getElementById('bulkModal').classList.remove('show');
+		}
 	</script>
 </body>
 </html>
