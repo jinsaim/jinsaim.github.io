@@ -72,6 +72,9 @@
 				<option value="write">쓰기</option>
 			</select>
 			<input type="text" id="search" placeholder="검색(한자/음/뜻)" />
+			<select id="groupFilter" title="묶음 선택">
+				<option value="">전체 묶음</option>
+			</select>
 			<button id="shuffleBtn">섞기</button>
 			<button id="resetBtn">초기화</button>
 			<button id="exportBtn">백업</button>
@@ -194,13 +197,25 @@
 			return a;
 		}
 
-		// 검색
+		// 검색 + 그룹 필터
 		function doSearch() {
 			const q = document.getElementById('search').value.trim();
-			if (!q) { renderLearn(); return; }
-			const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-			const filtered = data.filter(x => re.test(x.ch) || re.test(x.read) || re.test(x.mean || ''));
-			renderLearn(filtered);
+			const grp = document.getElementById('groupFilter').value;
+			let list = data;
+			if (grp) list = list.filter(x => (x.group || '') === grp);
+			if (q) {
+				const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+				list = list.filter(x => re.test(x.ch) || re.test(x.read) || re.test(x.mean || ''));
+			}
+			renderLearn(list);
+		}
+
+		function rebuildGroupFilter() {
+			const sel = document.getElementById('groupFilter');
+			const current = sel.value;
+			const groups = Array.from(new Set(data.map(x => x.group).filter(Boolean))).sort();
+			sel.innerHTML = '<option value="">전체 묶음</option>' + groups.map(g => `<option value="${g}">${g}</option>`).join('');
+			if (current && groups.includes(current)) sel.value = current;
 		}
 
 		// 퀴즈
@@ -274,21 +289,23 @@
 		document.addEventListener('DOMContentLoaded', () => {
 			loadData();
 			renderLearn();
+			rebuildGroupFilter();
 			startQuiz();
 
 			document.getElementById('modeSelect').addEventListener('change', (e) => setMode(e.target.value));
 			document.getElementById('search').addEventListener('input', doSearch);
+			document.getElementById('groupFilter').addEventListener('change', doSearch);
 			document.getElementById('shuffleBtn').addEventListener('click', () => { data = shuffle(data); saveData(); renderLearn(); startQuiz(); });
 			document.getElementById('resetBtn').addEventListener('click', doReset);
 			document.getElementById('exportBtn').addEventListener('click', doExport);
 			document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
-			document.getElementById('importFile').addEventListener('change', (e) => e.target.files[0] && doImport(e.target.files[0]));
+			document.getElementById('importFile').addEventListener('change', (e) => { if (e.target.files[0]) { doImport(e.target.files[0]); setTimeout(() => { rebuildGroupFilter(); doSearch(); }, 100); } });
 
 			document.getElementById('quizCheck').addEventListener('click', checkQuiz);
 			document.getElementById('quizNext').addEventListener('click', () => { quizIndex++; showQuiz(); });
 			document.getElementById('quizAnswer').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); checkQuiz(); } });
 
-			document.getElementById('wAdd').addEventListener('click', addItem);
+			document.getElementById('wAdd').addEventListener('click', () => { addItem(); rebuildGroupFilter(); doSearch(); });
 
 			// 학습 카드 클릭 -> 필순 모달
 			const learnGrid = document.getElementById('learnGrid');
