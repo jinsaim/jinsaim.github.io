@@ -58,6 +58,9 @@
 		.btn { background: #0b1220; color: var(--text); border: 1px solid #334155; padding: .5rem .8rem; border-radius: .5rem; cursor: pointer; }
 		.btn:hover { border-color: #475569; }
 		.btn.primary { background: var(--accent); color: #052e13; border-color: transparent; font-weight: 700; }
+
+		/* Bulk import modal */
+		#bulkText { width: 100%; min-height: 180px; background: #0b1020; color: var(--text); border: 1px solid #1f2937; border-radius: .5rem; padding: .75rem; }
 	</style>
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@2.2/dist/hanzi-writer.min.js"></script>
 </head>
@@ -82,6 +85,7 @@
 			<button id="exportBtn">백업</button>
 			<input id="importFile" type="file" accept="application/json" style="display:none" />
 			<button id="importBtn">가져오기</button>
+			<button id="bulkBtn" class="primary" title="천자문 전체를 빠르게 붙여넣기로 등록">전체 붙여넣기</button>
 			<span class="footer" id="countInfo"></span>
 		</div>
 
@@ -147,6 +151,26 @@
 				</div>
 			</div>
 		</div>
+
+			<!-- Bulk Paste Modal -->
+			<div id="bulkModal" class="modal" aria-hidden="true">
+				<div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="bulkTitle">
+					<div class="modal-header">
+						<div class="modal-title" id="bulkTitle">천자문 전체 붙여넣기</div>
+						<button id="bulkClose" class="btn" aria-label="닫기">닫기</button>
+					</div>
+					<div class="modal-body" style="width:min(92vw, 620px)">
+						<div style="font-size:.9rem; color:var(--muted); line-height:1.6; text-align:left;">
+							천자문 1000자를 복사해 아래 상자에 붙여넣으세요. 공백/줄바꿈은 제거되며, 4자씩 한 묶음(001부터)으로 자동 그룹화됩니다.
+						</div>
+						<textarea id="bulkText" placeholder="예) 天地玄黃宇宙洪荒...  (1000자)"></textarea>
+					</div>
+					<div class="modal-footer">
+						<button id="bulkReplace" class="btn" title="기존 데이터를 전체 교체">전체 교체</button>
+						<button id="bulkMerge" class="btn primary" title="기존 데이터에 추가(중복 제거)">추가(중복 제거)</button>
+					</div>
+				</div>
+			</div>
 
 	<script>
 		// 기본 데이터(시드). 이후 JSON으로 전체를 불러올 수 있음
@@ -303,6 +327,14 @@
 			document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
 			document.getElementById('importFile').addEventListener('change', (e) => { if (e.target.files[0]) { doImport(e.target.files[0]); setTimeout(() => { rebuildGroupFilter(); doSearch(); }, 100); } });
 
+			// Bulk paste modal events
+			const bulkModal = document.getElementById('bulkModal');
+			document.getElementById('bulkBtn').addEventListener('click', () => { bulkModal.classList.add('show'); });
+			document.getElementById('bulkClose').addEventListener('click', () => { bulkModal.classList.remove('show'); });
+			bulkModal.addEventListener('click', (e) => { if (e.target === bulkModal) bulkModal.classList.remove('show'); });
+			document.getElementById('bulkReplace').addEventListener('click', () => handleBulk('replace'));
+			document.getElementById('bulkMerge').addEventListener('click', () => handleBulk('merge'));
+
 			document.getElementById('quizCheck').addEventListener('click', checkQuiz);
 			document.getElementById('quizNext').addEventListener('click', () => { quizIndex++; showQuiz(); });
 			document.getElementById('quizAnswer').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); checkQuiz(); } });
@@ -359,6 +391,30 @@
 			strokeReplay.addEventListener('click', () => { if (writer) writer.animateCharacter(); });
 			strokeModal.addEventListener('click', (e) => { if (e.target === strokeModal) closeStroke(); });
 		});
+
+		function handleBulk(mode){
+			const raw = document.getElementById('bulkText').value;
+			if (!raw || raw.trim().length < 4) { alert('문자를 붙여넣어 주세요.'); return; }
+			// 공백/제어문자 제거 후 한자만 필터링
+			const cleaned = raw.replace(/\s+/g, '');
+			const onlyHan = Array.from(cleaned).filter(ch => /\p{Script=Han}/u.test(ch));
+			if (onlyHan.length < 4) { alert('유효한 입력이 아닙니다. 한자(漢字)만 붙여넣어 주세요.'); return; }
+			const built = onlyHan.map((ch, i) => ({ ch, read: '', mean: '', group: String(Math.floor(i/4)+1).padStart(3,'0') }));
+			if (mode === 'replace') {
+				data = built;
+			} else {
+				// merge: 문자 기준 중복 제거
+				const existingSet = new Set(data.map(x => x.ch));
+				const toAdd = built.filter(x => !existingSet.has(x.ch));
+				data = data.concat(toAdd);
+			}
+			saveData();
+			rebuildGroupFilter();
+			doSearch();
+			alert(`등록 완료: 총 ${data.length}자, 그룹 ${new Set(data.map(x=>x.group).filter(Boolean)).size}개`);
+			document.getElementById('bulkText').value = '';
+			document.getElementById('bulkModal').classList.remove('show');
+		}
 	</script>
 </body>
 </html>
