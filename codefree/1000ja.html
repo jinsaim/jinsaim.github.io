@@ -44,7 +44,21 @@
 		.ok { color: var(--accent); }
 		.bad { color: var(--danger); }
 		.footer { color: var(--muted); font-size: .85rem; margin-top: 1rem; text-align: right; }
+
+		/* Stroke-order modal */
+		.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 50; }
+		.modal.show { display: flex; }
+		.modal-content { width: min(92vw, 420px); background: #0b1220; border: 1px solid #1f2937; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.35); }
+		.modal-header { display: flex; align-items: center; justify-content: space-between; padding: .9rem 1rem; border-bottom: 1px solid #1f2937; }
+		.modal-title { font-weight: 700; }
+		.modal-body { padding: 1rem; display: grid; gap: .5rem; justify-items: center; }
+		#strokeTarget { width: 280px; height: 280px; background: #0b1020; border: 1px dashed #334155; border-radius: .75rem; display: grid; place-items: center; }
+		.modal-footer { padding: .9rem 1rem; display: flex; gap: .5rem; justify-content: flex-end; border-top: 1px solid #1f2937; }
+		.btn { background: #0b1220; color: var(--text); border: 1px solid #334155; padding: .5rem .8rem; border-radius: .5rem; cursor: pointer; }
+		.btn:hover { border-color: #475569; }
+		.btn.primary { background: var(--accent); color: #052e13; border-color: transparent; font-weight: 700; }
 	</style>
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@2.2/dist/hanzi-writer.min.js"></script>
 </head>
 <body>
 	<header>
@@ -111,6 +125,23 @@
 		</section>
 
 	</div>
+
+		<!-- Stroke-order Modal -->
+		<div id="strokeModal" class="modal" aria-hidden="true">
+			<div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="strokeTitle">
+				<div class="modal-header">
+					<div class="modal-title" id="strokeTitle">필순 보기</div>
+					<button id="strokeClose" class="btn" aria-label="닫기">닫기</button>
+				</div>
+				<div class="modal-body">
+					<div id="strokeTarget"></div>
+					<div id="strokeMeta" style="color: var(--muted); font-size: .9rem;"></div>
+				</div>
+				<div class="modal-footer">
+					<button id="strokeReplay" class="btn primary">다시 보기</button>
+				</div>
+			</div>
+		</div>
 
 	<script>
 		// 기본 데이터(시드). 이후 JSON으로 전체를 불러올 수 있음
@@ -258,6 +289,56 @@
 			document.getElementById('quizAnswer').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); checkQuiz(); } });
 
 			document.getElementById('wAdd').addEventListener('click', addItem);
+
+			// 학습 카드 클릭 -> 필순 모달
+			const learnGrid = document.getElementById('learnGrid');
+			const strokeModal = document.getElementById('strokeModal');
+			const strokeTarget = document.getElementById('strokeTarget');
+			const strokeTitle = document.getElementById('strokeTitle');
+			const strokeMeta = document.getElementById('strokeMeta');
+			const strokeClose = document.getElementById('strokeClose');
+			const strokeReplay = document.getElementById('strokeReplay');
+			let writer = null;
+
+			function openStroke(ch, read, mean){
+				// 모달 표시
+				strokeTitle.textContent = `필순: ${ch}`;
+				strokeMeta.textContent = [read||'', mean||''].filter(Boolean).join(' · ');
+				strokeTarget.innerHTML = '';
+				strokeModal.classList.add('show');
+				// Hanzi Writer 생성
+				try {
+					writer = HanziWriter.create(strokeTarget, ch, {
+						width: 280,
+						height: 280,
+						padding: 12,
+						showCharacter: false,
+						strokeColor: '#22c55e',
+						radicalColor: '#60a5fa',
+						strokeAnimationSpeed: 1.2,
+						delayBetweenStrokes: 150,
+					});
+					writer.animateCharacter();
+				} catch (e) {
+					strokeTarget.innerHTML = '<div style="padding:1rem; color:#f87171;">이 글자의 필순 데이터를 찾지 못했습니다.</div>';
+				}
+			}
+
+			function closeStroke(){
+				strokeModal.classList.remove('show');
+			}
+
+			learnGrid.addEventListener('click', (ev) => {
+				const card = ev.target.closest('.card');
+				if (!card) return;
+				const idx = Number(card.getAttribute('data-idx'));
+				const item = (data[idx]) || null;
+				if (!item) return;
+				openStroke(item.ch, item.read, item.mean);
+			});
+			strokeClose.addEventListener('click', closeStroke);
+			strokeReplay.addEventListener('click', () => { if (writer) writer.animateCharacter(); });
+			strokeModal.addEventListener('click', (e) => { if (e.target === strokeModal) closeStroke(); });
 		});
 	</script>
 </body>
