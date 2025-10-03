@@ -1,0 +1,13 @@
+{
+  "dict": {
+    "天": { "read": "천", "mean": "하늘", "group": "001" },
+    "地": { "read": "지", "mean": "땅", "group": "001" },
+    "玄": { "read": "현", "mean": "검다", "group": "001" },
+    "黃": { "read": "황", "mean": "누르다", "group": "001" },
+    "宇": { "read": "우", "mean": "집, 공간", "group": "002" },
+    "宙": { "read": "주", "mean": "시간, 시공", "group": "002" },
+    "洪": { "read": "홍", "mean": "크다", "group": "002" },
+    "荒": { "read": "황", "mean": "거칠다", "group": "002" }
+  },
+  "note": "dict/map은 ch를 키로 하여 read/mean/group을 덮어씁니다. 가져오기 시 기존 items와 병합됩니다."
+}
