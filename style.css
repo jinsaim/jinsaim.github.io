@@ -1,0 +1,82 @@
+/* 기본 스타일 */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+	margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height: 1.6;
+	background: #f5f7fb; color: #222;
+}
+
+.container { width: 92%; max-width: 1100px; margin: 0 auto; }
+
+header { background: #333; color: #fff; padding: 1rem 0; margin-bottom: 1rem; }
+header h1 { margin: 0; font-size: clamp(1.3rem, 1rem + 1.2vw, 2rem); }
+
+main { padding-bottom: 2rem; }
+
+h2 { margin: 1.5rem 0 0.5rem; font-size: clamp(1.2rem, 1rem + 0.8vw, 1.6rem); }
+h3 { margin: 0 0 0.25rem; font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.25rem); }
+p  { margin: 0; color: #444; }
+
+.links .grid {
+	display: grid; gap: 1rem; grid-template-columns: 1fr; margin: 0.5rem 0 1.5rem;
+}
+
+.card {
+	display: block; background: #fff; border-radius: 10px; padding: 1rem 1.1rem; text-decoration: none; color: inherit;
+	box-shadow: 0 6px 16px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.06);
+	transition: transform .18s ease, box-shadow .18s ease;
+}
+.card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px rgba(0,0,0,0.12); }
+.card p { opacity: .9; }
+
+/* 섹션별 테마 색상 (CSS 변수) */
+.links { --card-bg: #ffffff; --card-border: rgba(0,0,0,0.06); --card-shadow: rgba(0,0,0,0.08); }
+/* 위에서부터: 빨(레드) → 주(오렌지) → 노(옐로) → 초(그린) → 파(블루) → 남(인디고) */
+.theme-naver     { --card-bg: #ffe5e7; --card-border: #ffccd0; --accent: #e03131; } /* 빨 */
+.theme-veritas   { --card-bg: #fff1e6; --card-border: #ffd7b8; --accent: #f08c00; } /* 주 */
+.theme-kice      { --card-bg: #fff9cc; --card-border: #ffe999; --accent: #b08900; } /* 노 */
+.theme-curriculum{ --card-bg: #e9f8ef; --card-border: #cbeed6; --accent: #2f9e44; } /* 초 */
+.theme-career    { --card-bg: #e6f0ff; --card-border: #c7dcff; --accent: #1f6ae5; } /* 파 */
+.theme-holistic  { --card-bg: #ecebff; --card-border: #d8d6ff; --accent: #5145cd; } /* 남 */
+.theme-thatisit  { --card-bg: #f1e9ff; --card-border: #e0d0ff; --accent: #9333ea; } /* 보라 (퍼플) */
+
+.links .card {
+  background: var(--card-bg);
+  border-color: var(--card-border);
+}
+.links .card h3 { color: var(--accent, inherit); }
+.links .card:hover { border-color: var(--accent, rgba(0,0,0,0.12)); }
+
+footer { background: #333; color: #fff; padding: 1rem 0; margin-top: 1rem; }
+footer p { margin: 0; text-align: center; font-size: 0.95rem; color: #fff; }
+
+@media (min-width: 768px) {
+	.links .grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+	.links .grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* 다크 모드 */
+@media (prefers-color-scheme: dark) {
+	body { background: #0f1115; color: #d9dbe0; }
+	header, footer { background: #0b0d12; }
+	.card { background: #151823; border-color: rgba(255,255,255,0.06); box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+	/* 다크 모드에서 테마 배경은 살짝 톤다운 (빨주노초파남 순서 반영) */
+	.theme-naver .card      { background: #241416; border-color: #3a2125; }
+	.theme-veritas .card    { background: #23190f; border-color: #3a2918; }
+	.theme-kice .card       { background: #23200f; border-color: #3a3417; }
+	.theme-curriculum .card { background: #0f2316; border-color: #183a26; }
+	.theme-career .card     { background: #0f1b2a; border-color: #16304a; }
+    .theme-holistic .card   { background: #161531; border-color: #26245a; }
+	.theme-thatisit .card   { background: #1e1430; border-color: #2e2050; }
+
+	p { color: #b7bcc8; }
+  footer p { color: #fff; }
+}
+
+/* 모션 줄이기 */
+@media (prefers-reduced-motion: reduce) {
+	* { transition: none !important; animation: none !important; }
+}
