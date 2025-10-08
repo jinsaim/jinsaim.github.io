@@ -1,6 +1,7 @@
 name: Update thousandChars JSON
 
 on:
+  workflow_dispatch: {}
   schedule:
     - cron: '0 0 * * 1' # every Monday 00:00 UTC
   push:
